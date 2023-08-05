@@ -1,6 +1,9 @@
 use axum::{routing::get, Router};
 use std::net::SocketAddr;
 
+pub mod models;
+pub mod services;
+
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt::init();
