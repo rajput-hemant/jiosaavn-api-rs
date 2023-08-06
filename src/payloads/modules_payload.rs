@@ -1,6 +1,6 @@
 use crate::{
     models::modules::{
-        ChartResponse, DiscoverResponse, ModulesRequest, ModulesResponse, PlaylistResponse,
+        ChartResponse, DiscoverResponse, ModulePlaylistResponse, ModulesRequest, ModulesResponse,
         RadioResponse, ShowResponse, TopShowResponse, TrendingResponse,
     },
     utils::{create_image_links, parse_explicit_content},
@@ -130,7 +130,7 @@ pub fn modules_paylod(modules: ModulesRequest) -> ModulesResponse {
         playlists: modules
             .top_playlists
             .into_iter()
-            .map(|playlist| PlaylistResponse {
+            .map(|playlist| ModulePlaylistResponse {
                 id: playlist.id,
                 name: playlist.title,
                 subtitle: playlist.subtitle,

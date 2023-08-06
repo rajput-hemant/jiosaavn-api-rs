@@ -15,7 +15,7 @@ pub struct ModulesRequest {
     pub charts: Vec<ChartRequest>,
     pub top_shows: TopShowsRequest,
     pub new_trending: Vec<TrendingRequest>,
-    pub top_playlists: Vec<PlaylistRequest>,
+    pub top_playlists: Vec<ModulePlaylistRequest>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -180,7 +180,7 @@ pub struct TrendingMoreInfo {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct PlaylistRequest {
+pub struct ModulePlaylistRequest {
     pub id: String,
     pub title: String,
     pub subtitle: String,
@@ -213,7 +213,7 @@ pub struct ModulesResponse {
     pub charts: Vec<ChartResponse>,
     pub shows: TopShowResponse,
     pub trending: Vec<TrendingResponse>,
-    pub playlists: Vec<PlaylistResponse>,
+    pub playlists: Vec<ModulePlaylistResponse>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -313,7 +313,7 @@ pub struct TrendingResponse {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct PlaylistResponse {
+pub struct ModulePlaylistResponse {
     pub id: String,
     pub name: String,
     pub subtitle: String,

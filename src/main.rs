@@ -8,7 +8,7 @@ use axum::{http::Method, routing::get, Router};
 use std::net::SocketAddr;
 use tower_http::cors::{Any, CorsLayer};
 
-use handlers::{album_handler, modules_handler};
+use handlers::{album_handler, modules_handler, playlist_handler};
 
 #[tokio::main]
 async fn main() {
@@ -24,6 +24,8 @@ async fn main() {
             "/album/recommendations",
             get(album_handler::recommend_albums_handler),
         )
+        // playlist details route
+        .route("/playlist", get(playlist_handler::playlist_details_handler))
         // cors layer
         .layer(
             CorsLayer::new()
@@ -40,5 +42,5 @@ async fn main() {
 }
 
 async fn root() -> &'static str {
-    "Hello, Folks!"
+    "🚀 Welcome to Unofficial Jio Saavn API!"
 }
