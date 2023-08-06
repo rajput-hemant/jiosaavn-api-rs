@@ -32,3 +32,19 @@ pub async fn get_song_details_by_link(link: &str) -> Result<serde_json::Value, r
 
     Ok(result)
 }
+
+pub async fn get_song_recommendations(id: &str) -> Result<serde_json::Value, reqwest::Error> {
+    let result: serde_json::Value = http(
+        "reco.getreco",
+        true,
+        Some(
+            vec![("pid".to_string(), id.to_string())]
+                .into_iter()
+                .collect(),
+        ),
+    )
+    .await?;
+
+    Ok(result)
+}
+

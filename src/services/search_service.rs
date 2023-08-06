@@ -1,5 +1,11 @@
 use super::api_service::http;
 
+pub async fn get_top_searches() -> Result<serde_json::Value, reqwest::Error> {
+    let result: serde_json::Value = http("content.getTopSearches", false, None).await?;
+
+    Ok(result)
+}
+
 pub async fn search_all(query: &str) -> Result<serde_json::Value, reqwest::Error> {
     let result: serde_json::Value = http(
         "autocomplete.get",
@@ -108,4 +114,16 @@ pub async fn search_artists(
     .await?;
 
     Ok(result)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_get_top_searches() {
+        let result = get_top_searches().await;
+
+        println!("{:?}", result);
+    }
 }
