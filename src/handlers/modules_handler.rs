@@ -8,6 +8,20 @@ use crate::{
     services::module_service::get_modules,
 };
 
+/// Handler for `/modules` route
+///
+/// ## Arguments
+///
+/// * `language` - Optional query parameter for Comma separated languages
+/// * Default languages: `hindi,english`
+/// * Available languages: `hindi`, `english`, `punjabi`, `tamil`, `telugu`, `marathi`,
+///  `gujarati`, `bengali`, `kannada`, `bhojpuri`, `malayalam`, `urdu`, `haryanvi`,
+///  `rajasthani`, `odia`, `assamese`
+///
+/// ## Returns
+///
+/// * `Json<CustomResponse<ModulesResponse>>` - Json response
+///
 pub async fn modules_handler(
     language: Option<Query<String>>,
 ) -> Json<CustomResponse<ModulesResponse>> {

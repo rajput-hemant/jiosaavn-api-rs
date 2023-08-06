@@ -8,7 +8,7 @@ use axum::{http::Method, routing::get, Router};
 use std::net::SocketAddr;
 use tower_http::cors::{Any, CorsLayer};
 
-use handlers::modules_handler;
+use handlers::{album_handler, modules_handler};
 
 #[tokio::main]
 async fn main() {
@@ -16,7 +16,15 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(root))
+        // home modules / launch data
         .route("/modules", get(modules_handler::modules_handler))
+        // album details route
+        .route("/album", get(album_handler::album_details_handler))
+        .route(
+            "/album/recommendations",
+            get(album_handler::recommend_albums_handler),
+        )
+        // cors layer
         .layer(
             CorsLayer::new()
                 .allow_origin(Any)

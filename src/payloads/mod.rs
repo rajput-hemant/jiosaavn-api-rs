@@ -1,1 +1,2 @@
-pub mod modules_playlaod;
+pub mod album_paylaod;
+pub mod modules_payload;

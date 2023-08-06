@@ -1,12 +1,17 @@
 use serde::{Deserialize, Serialize};
 
-use super::{album::ArtistMap, quality::Quality};
+use super::{
+    album::{AlbumRequest, AlbumResponse},
+    artist::ArtistMap,
+    misc::Rights,
+    quality::Quality,
+};
 
 #[derive(Debug, Deserialize)]
 pub struct ModulesRequest {
     pub radio: RadioRequest,
     pub browse_discover: Vec<DiscoverRequest>,
-    pub new_albums: Vec<ModuleAlbumRequest>,
+    pub new_albums: Vec<AlbumRequest>,
     pub charts: Vec<ChartRequest>,
     pub top_shows: TopShowsRequest,
     pub new_trending: Vec<TrendingRequest>,
@@ -64,33 +69,6 @@ pub struct DiscoverMoreInfo {
     pub is_featured: String,
     pub video_url: String,
     pub video_thumbnail: String,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct ModuleAlbumRequest {
-    pub id: String,
-    pub title: String,
-    pub subtitle: String,
-    pub header_desc: String,
-    #[serde(rename = "type")]
-    pub type_field: String,
-    pub language: String,
-    pub play_count: String,
-    pub explicit_content: String,
-    pub list_count: String,
-    pub list_type: String,
-    pub list: String,
-    pub more_info: ModuleAlbumMoreInfo,
-    pub year: String,
-    pub perma_url: String,
-    pub image: String,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct ModuleAlbumMoreInfo {
-    pub release_date: String,
-    #[serde(rename = "artistMap")]
-    pub artist_map: ArtistMap,
 }
 
 #[derive(Debug, Deserialize)]
@@ -202,14 +180,6 @@ pub struct TrendingMoreInfo {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct Rights {
-    pub code: String,
-    pub cacheable: String,
-    pub delete_cached_object: Option<String>,
-    pub reason: Option<String>,
-}
-
-#[derive(Debug, Deserialize)]
 pub struct PlaylistRequest {
     pub id: String,
     pub title: String,
@@ -239,7 +209,7 @@ pub struct PlaylistMoreInfo {
 pub struct ModulesResponse {
     pub radio: Vec<RadioResponse>,
     pub discover: Vec<DiscoverResponse>,
-    pub albums: Vec<ModuleAlbumResponse>,
+    pub albums: Vec<AlbumResponse>,
     pub charts: Vec<ChartResponse>,
     pub shows: TopShowResponse,
     pub trending: Vec<TrendingResponse>,
@@ -280,25 +250,6 @@ pub struct DiscoverResponse {
     pub is_featured: String,
     pub video_url: String,
     pub video_thumbnail: String,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ModuleAlbumResponse {
-    pub id: String,
-    pub name: String,
-    pub subtitle: String,
-    #[serde(rename = "type")]
-    pub type_field: String,
-    pub language: String,
-    pub play_count: u64,
-    pub explicit: bool,
-    pub year: u64,
-    pub url: String,
-    pub image: Quality,
-    pub release_date: String,
-    #[serde(rename = "artistMap")]
-    pub artist_map: ArtistMap,
 }
 
 #[derive(Debug, Deserialize, Serialize)]

@@ -1,11 +1,22 @@
 use crate::{
     models::modules::{
-        ChartResponse, DiscoverResponse, ModuleAlbumResponse, ModulesRequest, ModulesResponse,
-        PlaylistResponse, RadioResponse, ShowResponse, TopShowResponse, TrendingResponse,
+        ChartResponse, DiscoverResponse, ModulesRequest, ModulesResponse, PlaylistResponse,
+        RadioResponse, ShowResponse, TopShowResponse, TrendingResponse,
     },
     utils::{create_image_links, parse_explicit_content},
 };
 
+use super::album_paylaod::album_payload;
+
+/// Create modules payload from modules request
+///
+/// ## Arguments
+///
+/// * `modules` - Modules request
+///
+/// ## Returns
+///
+/// * `ModulesResponse` - Modules payload
 pub fn modules_paylod(modules: ModulesRequest) -> ModulesResponse {
     ModulesResponse {
         radio: modules
@@ -48,20 +59,7 @@ pub fn modules_paylod(modules: ModulesRequest) -> ModulesResponse {
         albums: modules
             .new_albums
             .into_iter()
-            .map(|album| ModuleAlbumResponse {
-                id: album.id,
-                name: album.title,
-                subtitle: album.subtitle,
-                type_field: album.type_field,
-                image: create_image_links(&album.image),
-                url: album.perma_url,
-                explicit: parse_explicit_content(album.explicit_content),
-                language: album.language,
-                play_count: album.play_count.parse().unwrap_or_default(),
-                year: album.year.parse().unwrap_or_default(),
-                release_date: album.more_info.release_date,
-                artist_map: album.more_info.artist_map,
-            })
+            .map(|album| album_payload(album))
             .collect(),
         charts: modules
             .charts
