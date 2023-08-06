@@ -1,18 +1,18 @@
-use crate::models::modules::ModulesRequest;
+use crate::{models::modules::ModulesResponse, payloads::modules_playlaod::modules_paylod};
 
 use super::api_service::http;
 
-pub async fn get_modules(language: &str) -> Result<ModulesRequest, reqwest::Error> {
-    let result: ModulesRequest = http(
-        "content.getBrowseModules",
+pub async fn get_modules(languages: &str) -> Result<ModulesResponse, reqwest::Error> {
+    let result = http(
+        "content.getBrowseModules", // `webapi.getLaunchData`
         true,
         Some(
-            vec![("language".to_string(), language.to_string())]
+            vec![("language".to_string(), languages.to_string())]
                 .into_iter()
                 .collect(),
         ),
     )
     .await?;
 
-    Ok(result)
+    Ok(modules_paylod(result))
 }

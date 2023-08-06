@@ -1,20 +1,20 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-use super::album::{AlbumRequest, ArtistMap};
+use super::{album::ArtistMap, quality::Quality};
 
 #[derive(Debug, Deserialize)]
 pub struct ModulesRequest {
-    pub radio: Radio,
-    pub browse_discover: Vec<BrowseDiscover>,
-    pub new_albums: Vec<AlbumRequest>,
-    pub charts: Vec<Chart>,
-    pub top_shows: TopShows,
-    pub new_trending: Vec<NewTrending>,
-    pub top_playlists: Vec<TopPlaylist>,
+    pub radio: RadioRequest,
+    pub browse_discover: Vec<DiscoverRequest>,
+    pub new_albums: Vec<ModuleAlbumRequest>,
+    pub charts: Vec<ChartRequest>,
+    pub top_shows: TopShowsRequest,
+    pub new_trending: Vec<TrendingRequest>,
+    pub top_playlists: Vec<PlaylistRequest>,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct Radio {
+pub struct RadioRequest {
     pub featured_stations: Vec<FeaturedStation>,
 }
 
@@ -27,13 +27,13 @@ pub struct FeaturedStation {
     pub type_field: String,
     pub image: String,
     pub perma_url: String,
-    pub more_info: FeaturedStationMoreInfo,
+    pub more_info: RadioMoreInfo,
     pub explicit_content: String,
     pub mini_obj: bool,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct FeaturedStationMoreInfo {
+pub struct RadioMoreInfo {
     pub description: Option<String>,
     pub featured_station_type: String,
     pub query: String,
@@ -43,7 +43,7 @@ pub struct FeaturedStationMoreInfo {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct BrowseDiscover {
+pub struct DiscoverRequest {
     pub id: String,
     pub title: String,
     pub subtitle: String,
@@ -51,24 +51,50 @@ pub struct BrowseDiscover {
     pub type_field: String,
     pub image: String,
     pub perma_url: String,
-    pub more_info: BrowseDiscoverMoreInfo,
+    pub more_info: DiscoverMoreInfo,
     pub explicit_content: String,
     pub mini_obj: bool,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct BrowseDiscoverMoreInfo {
+pub struct DiscoverMoreInfo {
     pub badge: String,
     pub sub_type: String,
     pub available: String,
     pub is_featured: String,
-    pub tags: serde_json::Value, // You can use a specific type if you know the expected structure of "tags".
     pub video_url: String,
     pub video_thumbnail: String,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct Chart {
+pub struct ModuleAlbumRequest {
+    pub id: String,
+    pub title: String,
+    pub subtitle: String,
+    pub header_desc: String,
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub language: String,
+    pub play_count: String,
+    pub explicit_content: String,
+    pub list_count: String,
+    pub list_type: String,
+    pub list: String,
+    pub more_info: ModuleAlbumMoreInfo,
+    pub year: String,
+    pub perma_url: String,
+    pub image: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ModuleAlbumMoreInfo {
+    pub release_date: String,
+    #[serde(rename = "artistMap")]
+    pub artist_map: ArtistMap,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ChartRequest {
     pub id: String,
     pub title: String,
     pub subtitle: String,
@@ -88,14 +114,13 @@ pub struct ChartMoreInfo {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct TopShows {
-    pub badge: String,
-    pub shows: Vec<Show>,
+pub struct TopShowsRequest {
+    pub shows: Vec<ShowRequest>,
     pub last_page: bool,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct Show {
+pub struct ShowRequest {
     pub id: String,
     pub title: String,
     pub subtitle: String,
@@ -118,7 +143,7 @@ pub struct ShowMoreInfo {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct NewTrending {
+pub struct TrendingRequest {
     pub id: String,
     pub title: String,
     pub subtitle: String,
@@ -134,11 +159,11 @@ pub struct NewTrending {
     pub list_count: String,
     pub list_type: String,
     pub list: String,
-    pub more_info: NewTrendingMoreInfo,
+    pub more_info: TrendingMoreInfo,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct NewTrendingMoreInfo {
+pub struct TrendingMoreInfo {
     pub release_date: Option<String>,
     pub song_count: Option<String>,
     #[serde(rename = "artistMap")]
@@ -185,7 +210,7 @@ pub struct Rights {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct TopPlaylist {
+pub struct PlaylistRequest {
     pub id: String,
     pub title: String,
     pub subtitle: String,
@@ -193,16 +218,162 @@ pub struct TopPlaylist {
     pub type_field: String,
     pub image: String,
     pub perma_url: String,
-    pub more_info: TopPlaylistMoreInfo,
+    pub more_info: PlaylistMoreInfo,
     pub explicit_content: String,
     pub mini_obj: bool,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct TopPlaylistMoreInfo {
+pub struct PlaylistMoreInfo {
     pub song_count: String,
     pub firstname: String,
     pub follower_count: String,
     pub last_updated: String,
     pub uid: String,
+}
+
+/*---------------------- Response ---------------------- */
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ModulesResponse {
+    pub radio: Vec<RadioResponse>,
+    pub discover: Vec<DiscoverResponse>,
+    pub albums: Vec<ModuleAlbumResponse>,
+    pub charts: Vec<ChartResponse>,
+    pub shows: TopShowResponse,
+    pub trending: Vec<TrendingResponse>,
+    pub playlists: Vec<PlaylistResponse>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RadioResponse {
+    pub id: String,
+    pub name: String,
+    pub subtitle: String,
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub url: String,
+    pub image: Quality,
+    pub explicit: bool,
+    pub language: String,
+    pub description: Option<String>,
+    pub query: String,
+    pub color: Option<String>,
+    pub featured_station_type: String,
+    pub station_display_text: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DiscoverResponse {
+    pub id: String,
+    pub name: String,
+    pub subtitle: String,
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub image: Quality,
+    pub url: String,
+    pub genre: String,
+    pub available: String,
+    pub is_featured: String,
+    pub video_url: String,
+    pub video_thumbnail: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ModuleAlbumResponse {
+    pub id: String,
+    pub name: String,
+    pub subtitle: String,
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub language: String,
+    pub play_count: u64,
+    pub explicit: bool,
+    pub year: u64,
+    pub url: String,
+    pub image: Quality,
+    pub release_date: String,
+    #[serde(rename = "artistMap")]
+    pub artist_map: ArtistMap,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct ChartResponse {
+    pub id: String,
+    pub name: String,
+    pub subtitle: String,
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub image: Quality,
+    pub url: String,
+    pub explicit: bool,
+    pub language: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TopShowResponse {
+    pub shows: Vec<ShowResponse>,
+    pub last_page: bool,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ShowResponse {
+    pub id: String,
+    pub name: String,
+    pub subtitle: String,
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub image: Quality,
+    pub url: String,
+    pub explicit: bool,
+    pub season_number: u64,
+    pub release_date: String,
+    pub year: u64,
+    pub square_image: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TrendingResponse {
+    pub id: String,
+    pub name: String,
+    pub subtitle: String,
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub url: String,
+    pub image: Quality,
+    pub language: String,
+    pub year: u64,
+    pub play_count: u64,
+    pub explicit: bool,
+    pub release_date: Option<String>,
+    pub song_count: Option<u64>,
+    #[serde(rename = "artistMap")]
+    pub artist_map: Option<ArtistMap>,
+    pub firstname: Option<String>,
+    pub follower_count: Option<u64>,
+    pub fan_count: Option<u64>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct PlaylistResponse {
+    pub id: String,
+    pub name: String,
+    pub subtitle: String,
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub image: Quality,
+    pub url: String,
+    pub explicit: bool,
+    pub song_count: u64,
+    pub firstname: String,
+    pub follower_count: u64,
+    pub last_updated: u64,
+    pub user_id: String,
 }
