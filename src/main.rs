@@ -8,7 +8,10 @@ use axum::{http::Method, routing::get, Router};
 use std::net::SocketAddr;
 use tower_http::cors::{Any, CorsLayer};
 
-use handlers::{album_handler, modules_handler, playlist_handler};
+use handlers::{
+    album_details_handler, modules_handler, playlist_details_handler, recommend_albums_handler,
+    recommend_songs_handler, song_details_handler,
+};
 
 #[tokio::main]
 async fn main() {
@@ -18,14 +21,14 @@ async fn main() {
         .route("/", get(root))
         // home modules / launch data
         .route("/modules", get(modules_handler::modules_handler))
+        // song details route
+        .route("/song", get(song_details_handler))
+        .route("/song/recommendations", get(recommend_songs_handler))
         // album details route
-        .route("/album", get(album_handler::album_details_handler))
-        .route(
-            "/album/recommendations",
-            get(album_handler::recommend_albums_handler),
-        )
+        .route("/album", get(album_details_handler))
+        .route("/album/recommendations", get(recommend_albums_handler))
         // playlist details route
-        .route("/playlist", get(playlist_handler::playlist_details_handler))
+        .route("/playlist", get(playlist_details_handler))
         // cors layer
         .layer(
             CorsLayer::new()

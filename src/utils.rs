@@ -1,5 +1,14 @@
 use crate::models::quality::{Quality, QualityObject};
 
+/// Utility function for creating image links of different qualities
+///
+/// ## Arguments
+///
+/// * `link` - A string slice that holds the link to the image
+///
+/// ## Returns
+///
+/// * `Quality` - An enum that holds the image link(s)
 pub fn create_image_links(link: &str) -> Quality {
     let qualities = vec!["50x50", "150x150", "500x500"];
 
@@ -25,6 +34,15 @@ pub fn create_image_links(link: &str) -> Quality {
     Quality::List(image_links)
 }
 
+/// A utility function for parsing explicit content string to boolean
+///
+/// ## Arguments
+///
+/// * `v` - A string slice that holds the explicit content string
+///
+/// ## Returns
+///
+/// * `bool` - A boolean value that indicates if the content is explicit or not
 pub fn parse_explicit_content(v: String) -> bool {
     match v.as_str() {
         "1" | "true" => true,

@@ -1,4 +1,4 @@
-use crate::{models::modules::ModulesResponse, payloads::modules_payload::modules_paylod};
+use crate::{models::modules::ModulesResponse, payloads::modules_paylod};
 
 use super::api_service::http;
 
@@ -38,7 +38,7 @@ mod tests {
     async fn test_get_modules() -> Result<(), reqwest::Error> {
         let result = get_modules("hindi,english").await?;
 
-        println!("{:?}", result);
+        dbg!("{:?}", result);
 
         Ok(())
     }

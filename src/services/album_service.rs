@@ -1,6 +1,6 @@
 use crate::{
     models::album::{AlbumRequest, AlbumResponse},
-    payloads::album_paylaod::album_payload,
+    payloads::album_payload,
 };
 
 use super::api_service::http;
@@ -38,6 +38,10 @@ pub async fn get_album_details_by_id(id: &str) -> Result<AlbumResponse, reqwest:
 /// ## Returns
 ///
 /// * `Result<AlbumResponse, reqwest::Error>` - Result of album payload
+///
+/// ## _Note_
+///
+/// * This function is not recommended to use as it is not stable
 pub async fn get_album_details_by_link(link: &str) -> Result<AlbumResponse, reqwest::Error> {
     let result = http(
         "webapi.get",
@@ -91,7 +95,7 @@ mod tests {
     async fn test_get_album_details_by_id() -> Result<(), reqwest::Error> {
         let result = get_album_details_by_id("1142502").await?;
 
-        println!("{:?}", result);
+        dbg!("{:?}", result.songs);
 
         Ok(())
     }
@@ -102,7 +106,7 @@ mod tests {
             get_album_details_by_link("https://www.jiosaavn.com/album/night-visions/xe6Gx7Sg12U_")
                 .await?;
 
-        println!("{:?}", result);
+        dbg!("{:?}", result);
 
         Ok(())
     }
@@ -111,7 +115,7 @@ mod tests {
     async fn test_get_album_recommendations() -> Result<(), reqwest::Error> {
         let result = get_album_recommendations("1142502").await?;
 
-        println!("{:?}", result);
+        dbg!("{:?}", result);
 
         Ok(())
     }

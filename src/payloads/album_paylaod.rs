@@ -1,7 +1,9 @@
 use crate::{
-    models::album::{AlbumRequest, AlbumResponse},
+    models::album::{AlbumRequest, AlbumResponse, AlbumSongList},
     utils::{create_image_links, parse_explicit_content},
 };
+
+use super::song_payload;
 
 /// Create album payload from album request
 ///
@@ -33,6 +35,9 @@ pub fn album_payload(album: AlbumRequest) -> AlbumResponse {
             .more_info
             .song_count
             .map(|f| f.parse().unwrap_or_default()),
-        songs: album.list,
+        songs: match album.list {
+            AlbumSongList::String(_) => vec![],
+            AlbumSongList::List(list) => list.into_iter().map(song_payload).collect(),
+        },
     }
 }

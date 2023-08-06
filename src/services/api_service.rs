@@ -31,17 +31,16 @@ impl ApiService {
 
 type Query = HashMap<String, String>;
 
-
 /// Main helper function to make request to JioSaavn API
-/// 
+///
 /// ## Arguments
-/// 
+///
 /// * `path` - API endpoint path
 /// * `is_version_4` - Whether to use version 4 of JioSaavn API
 /// * `query` - Query parameters
-/// 
+///
 /// ## Returns
-/// 
+///
 /// * `Result<T, Error>` - Result of API response
 pub async fn http<T: DeserializeOwned>(
     path: &str,

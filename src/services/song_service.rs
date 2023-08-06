@@ -1,9 +1,25 @@
+use serde_json::{from_value, Value};
+
+use crate::{
+    models::song::{SongRequest, SongResponse},
+    payloads::song_payload,
+};
+
 use super::api_service::http;
 
-pub async fn get_song_details_by_id(ids: &str) -> Result<serde_json::Value, reqwest::Error> {
-    let result: serde_json::Value = http(
+/// Helper function to make request to `song.getDetails` endpoint of JioSaavn API to get song details
+///
+/// ## Arguments
+///
+/// * `ids` - Comma separated song ids
+///
+/// ## Returns
+///
+/// * `Result<Vec<SongResponse>, reqwest::Error>` - Result of song payload
+pub async fn get_song_details_by_id(ids: &str) -> Result<Vec<SongResponse>, reqwest::Error> {
+    let result: Value = http(
         "song.getDetails",
-        false,
+        true,
         Some(
             vec![("pids".to_string(), ids.to_string())]
                 .into_iter()
@@ -12,13 +28,31 @@ pub async fn get_song_details_by_id(ids: &str) -> Result<serde_json::Value, reqw
     )
     .await?;
 
-    Ok(result)
+    let songs = parse_song_value(result)
+        .into_iter()
+        .map(|song| song_payload(song))
+        .collect();
+
+    Ok(songs)
 }
 
-pub async fn get_song_details_by_link(link: &str) -> Result<serde_json::Value, reqwest::Error> {
-    let result: serde_json::Value = http(
+/// Helper function to make request to `webapi.get` endpoint of JioSaavn API to get song details
+///
+/// ## Arguments
+///
+/// * `link` - Song link
+///
+/// ## Returns
+///
+/// * `Result<Vec<SongResponse>, reqwest::Error>` - Result of song payload
+///
+/// ## _Note_
+///
+/// * This function is not recommended to use as it is not stable
+pub async fn get_song_details_by_link(link: &str) -> Result<Vec<SongResponse>, reqwest::Error> {
+    let result: Value = http(
         "webapi.get",
-        false,
+        true,
         Some(
             vec![
                 ("token".to_string(), link.to_string()),
@@ -30,11 +64,25 @@ pub async fn get_song_details_by_link(link: &str) -> Result<serde_json::Value, r
     )
     .await?;
 
-    Ok(result)
+    let songs = parse_song_value(result)
+        .into_iter()
+        .map(|song| song_payload(song))
+        .collect();
+
+    Ok(songs)
 }
 
-pub async fn get_song_recommendations(id: &str) -> Result<serde_json::Value, reqwest::Error> {
-    let result: serde_json::Value = http(
+/// Helper function to make request to `reco.getreco` endpoint of JioSaavn API to get song recommendations
+///
+/// ## Arguments
+///
+/// * `id` - Song id
+///
+/// ## Returns
+///
+/// * `Result<Vec<SongResponse>, reqwest::Error>` - Result of song payload
+pub async fn get_song_recommendations(id: &str) -> Result<Vec<SongResponse>, reqwest::Error> {
+    let result: Vec<SongRequest> = http(
         "reco.getreco",
         true,
         Some(
@@ -45,6 +93,60 @@ pub async fn get_song_recommendations(id: &str) -> Result<serde_json::Value, req
     )
     .await?;
 
-    Ok(result)
+    let songs = result.into_iter().map(|song| song_payload(song)).collect();
+
+    Ok(songs)
 }
 
+/// Utility function to parse song from serde_json::Value
+///
+/// ## Arguments
+///
+/// * `serde_value` - serde_json::Value
+///
+/// ## Returns
+///
+/// * `Vec<SongRequest>` - Vector of SongRequest
+fn parse_song_value(serde_value: Value) -> Vec<SongRequest> {
+    let songs = serde_value["songs"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|song| from_value(song.clone()).unwrap())
+        .collect();
+    songs
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_get_song_details_by_id() -> Result<(), reqwest::Error> {
+        let result = get_song_details_by_id("5WXAlMNt,9BjJPi0Y").await?;
+
+        dbg!("{:?}", result);
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_get_song_details_by_link() -> Result<(), reqwest::Error> {
+        let result =
+            get_song_details_by_link("https://www.jiosaavn.com/song/thunderclouds/RT8zcBh9eUc")
+                .await?;
+
+        dbg!("{:?}", result);
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_get_song_recommendations() -> Result<(), reqwest::Error> {
+        let result = get_song_recommendations("5WXAlMNt").await?;
+
+        dbg!("{:?}", result);
+
+        Ok(())
+    }
+}

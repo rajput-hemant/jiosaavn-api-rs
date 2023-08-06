@@ -5,6 +5,6 @@ use serde_json::Value;
 pub struct Rights {
     pub code: Value,
     pub cacheable: Value,
-    pub delete_cached_object: Value,
-    pub reason: Value,
+    pub delete_cached_object: Option<Value>,
+    pub reason: Option<Value>,
 }

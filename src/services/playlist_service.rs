@@ -1,4 +1,4 @@
-use crate::{models::playlist::PlaylistResponse, payloads::playlist_payload::playlist_payload};
+use crate::{models::playlist::PlaylistResponse, payloads::playlist_payload};
 
 use super::api_service::http;
 
@@ -14,7 +14,7 @@ use super::api_service::http;
 pub async fn get_playlist_details_by_id(id: &str) -> Result<PlaylistResponse, reqwest::Error> {
     let result = http(
         "playlist.getDetails",
-        false,
+        true,
         Some(
             vec![("listid".to_string(), id.to_string())]
                 .into_iter()
@@ -34,7 +34,7 @@ mod tests {
     async fn test_get_album_details_by_id() -> Result<(), reqwest::Error> {
         let result = get_playlist_details_by_id("159144718").await?;
 
-        println!("{:?}", result);
+        dbg!("{:?}", result);
 
         Ok(())
     }
