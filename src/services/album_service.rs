@@ -1,6 +1,7 @@
 use crate::{
     models::album::{AlbumRequest, AlbumResponse},
     payloads::album_payload,
+    utils::token_from_link,
 };
 
 use super::api_service::http;
@@ -48,7 +49,7 @@ pub async fn get_album_details_by_link(link: &str) -> Result<AlbumResponse, reqw
         true,
         Some(
             vec![
-                ("token".to_string(), link.to_string()),
+                ("token".to_string(), token_from_link("album", link)),
                 ("type".to_string(), "album".to_string()),
             ]
             .into_iter()

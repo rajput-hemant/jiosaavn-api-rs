@@ -4,11 +4,11 @@ use crate::models::quality::{Quality, QualityObject};
 ///
 /// ## Arguments
 ///
-/// * `link` - A string slice that holds the link to the image
+/// * `link` - image link from the API
 ///
 /// ## Returns
 ///
-/// * `Quality` - An enum that holds the image link(s)
+/// * `Quality` - An enum that holds the image link(s) with different qualities
 pub fn create_image_links(link: &str) -> Quality {
     let qualities = vec!["50x50", "150x150", "500x500"];
 
@@ -38,7 +38,7 @@ pub fn create_image_links(link: &str) -> Quality {
 ///
 /// ## Arguments
 ///
-/// * `v` - A string slice that holds the explicit content string
+/// * `v` - explicit content string
 ///
 /// ## Returns
 ///
@@ -48,4 +48,21 @@ pub fn parse_explicit_content(v: String) -> bool {
         "1" | "true" => true,
         _ => false,
     }
+}
+
+/// A utility function for extracting the token from a link
+///
+/// ## Arguments
+///
+/// * `_type` - item type (song, album, artist)
+/// * `link` - link from the API
+///
+/// ## Returns
+///
+/// * `String` - extracted token
+pub fn token_from_link(_type: &str, link: &str) -> String {
+    link.split(&format!("{_type}/")).collect::<Vec<_>>()[1]
+        .split('/')
+        .collect::<Vec<_>>()[1]
+        .to_string()
 }

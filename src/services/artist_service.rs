@@ -7,6 +7,7 @@ use crate::{
         artist_payload::{artist_albums_payload, artist_payload, artist_songs_payload},
         song_payload,
     },
+    utils::token_from_link,
 };
 
 use super::api_service::http;
@@ -50,7 +51,7 @@ pub async fn get_artist_details_by_link(link: &str) -> Result<ArtistResponse, re
         true,
         Some(
             vec![
-                ("token".to_string(), link.to_string()),
+                ("token".to_string(), token_from_link("artist", link)),
                 ("type".to_string(), "artist".to_string()),
             ]
             .into_iter()

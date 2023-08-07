@@ -3,6 +3,7 @@ use serde_json::{from_value, Value};
 use crate::{
     models::song::{SongRequest, SongResponse},
     payloads::song_payload,
+    utils::token_from_link,
 };
 
 use super::api_service::http;
@@ -55,7 +56,7 @@ pub async fn get_song_details_by_link(link: &str) -> Result<Vec<SongResponse>, r
         true,
         Some(
             vec![
-                ("token".to_string(), link.to_string()),
+                ("token".to_string(), token_from_link("song", link)),
                 ("type".to_string(), "song".to_string()),
             ]
             .into_iter()
