@@ -3,7 +3,7 @@ use crate::{
     utils::{create_image_links, parse_explicit_content},
 };
 
-use super::song_payload;
+use super::{artist_payload::artist_mini_payload, song_payload};
 
 /// Create playlist payload from playlist request
 ///
@@ -41,7 +41,12 @@ pub fn playlist_payload(playlist: PlaylistRequest) -> PlaylistResponse {
             .unwrap_or_default(),
         is_dolby_content: playlist.more_info.is_dolby_content,
         video_count: playlist.more_info.video_count.parse().unwrap_or_default(),
-        artists: playlist.more_info.artists,
+        artists: playlist
+            .more_info
+            .artists
+            .into_iter()
+            .map(artist_mini_payload)
+            .collect(),
         explicit_content: parse_explicit_content(playlist.explicit_content),
         language: playlist.language,
         play_count: playlist.play_count.parse().unwrap_or_default(),

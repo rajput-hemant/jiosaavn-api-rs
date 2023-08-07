@@ -1,6 +1,10 @@
 use serde::{Deserialize, Serialize};
 
-use super::{artist::ArtistMap, misc::Rights, quality::Quality};
+use super::{
+    artist::{ArtistMapRequest, ArtistMapResponse},
+    misc::Rights,
+    quality::Quality,
+};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SongRequest {
@@ -44,12 +48,11 @@ pub struct SongRequestMoreInfo {
     pub starred: String,
     pub copyright_text: String,
     #[serde(rename = "artistMap")]
-    pub artist_map: ArtistMap,
-    pub release_date: String,
+    pub artist_map: ArtistMapRequest,
+    pub release_date: Option<String>,
     pub vcode: Option<String>,
     pub vlink: Option<String>,
     pub triller_available: bool,
-    pub request_jiotune_flag: bool,
     pub webp: String,
     pub lyrics_id: Option<String>,
 }
@@ -93,7 +96,7 @@ pub struct SongResponse {
     pub starred: bool,
     pub copyright_text: String,
     #[serde(rename = "artistMap")]
-    pub artist_map: ArtistMap,
+    pub artist_map: ArtistMapResponse,
     pub release_date: String,
     pub vcode: Option<String>,
     pub vlink: Option<String>,

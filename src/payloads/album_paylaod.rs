@@ -3,7 +3,7 @@ use crate::{
     utils::{create_image_links, parse_explicit_content},
 };
 
-use super::song_payload;
+use super::{artist_payload::artist_map_payload, song_payload};
 
 /// Create album payload from album request
 ///
@@ -27,7 +27,7 @@ pub fn album_payload(album: AlbumRequest) -> AlbumResponse {
         play_count: album.play_count.parse().unwrap_or_default(),
         year: album.year.parse().unwrap_or_default(),
         release_date: album.more_info.release_date,
-        artist_map: album.more_info.artist_map,
+        artist_map: album.more_info.artist_map.map(artist_map_payload),
         copyright_text: album.more_info.copyright_text,
         is_dolby_content: album.more_info.is_dolby_content,
         meta_html: album.more_info.meta_html,

@@ -9,8 +9,9 @@ use std::net::SocketAddr;
 use tower_http::cors::{Any, CorsLayer};
 
 use handlers::{
-    album_details_handler, modules_handler, playlist_details_handler, recommend_albums_handler,
-    recommend_songs_handler, song_details_handler,
+    album_details_handler, artist_albums_handler, artist_details_handler, artist_songs_handler,
+    modules_handler, playlist_details_handler, recommend_albums_handler,
+    recommend_artists_songs_handler, recommend_songs_handler, song_details_handler,
 };
 
 #[tokio::main]
@@ -29,6 +30,14 @@ async fn main() {
         .route("/album/recommendations", get(recommend_albums_handler))
         // playlist details route
         .route("/playlist", get(playlist_details_handler))
+        // artist details route
+        .route("/artist", get(artist_details_handler))
+        .route("/artist/songs", get(artist_songs_handler))
+        .route("/artist/albums", get(artist_albums_handler))
+        .route(
+            "/artist/recommendations",
+            get(recommend_artists_songs_handler),
+        )
         // cors layer
         .layer(
             CorsLayer::new()

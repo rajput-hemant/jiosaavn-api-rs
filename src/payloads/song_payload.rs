@@ -2,6 +2,8 @@ use crate::{
     models::song::{SongRequest, SongResponse},
     utils::create_image_links,
 };
+
+use super::artist_payload::artist_map_payload;
 /// Create song payload from song request
 ///
 /// ## Arguments
@@ -43,8 +45,8 @@ pub fn song_payload(song: SongRequest) -> SongResponse {
         has_lyrics: song.more_info.has_lyrics.parse().unwrap_or_default(),
         lyrics_snippet: song.more_info.lyrics_snippet,
         starred: song.more_info.starred.parse().unwrap_or_default(),
-        artist_map: song.more_info.artist_map,
-        release_date: song.more_info.release_date,
+        artist_map: artist_map_payload(song.more_info.artist_map),
+        release_date: song.more_info.release_date.unwrap_or_default(),
         vcode: song.more_info.vcode,
         vlink: song.more_info.vlink,
         triller_available: song.more_info.triller_available,

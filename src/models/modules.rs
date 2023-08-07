@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{
     album::{AlbumRequest, AlbumResponse},
-    artist::ArtistMap,
+    artist::{ArtistMapRequest, ArtistMapResponse},
     misc::Rights,
     quality::Quality,
 };
@@ -145,7 +145,7 @@ pub struct TrendingMoreInfo {
     pub release_date: Option<String>,
     pub song_count: Option<String>,
     #[serde(rename = "artistMap")]
-    pub artist_map: Option<ArtistMap>,
+    pub artist_map: Option<ArtistMapRequest>,
     pub music: Option<String>,
     pub album_id: Option<String>,
     pub album: Option<String>,
@@ -306,7 +306,7 @@ pub struct TrendingResponse {
     pub release_date: Option<String>,
     pub song_count: Option<u64>,
     #[serde(rename = "artistMap")]
-    pub artist_map: Option<ArtistMap>,
+    pub artist_map: Option<ArtistMapResponse>,
     pub firstname: Option<String>,
     pub follower_count: Option<u64>,
     pub fan_count: Option<u64>,

@@ -95,7 +95,7 @@ mod tests {
     async fn test_get_album_details_by_id() -> Result<(), reqwest::Error> {
         let result = get_album_details_by_id("1142502").await?;
 
-        dbg!("{:?}", result.songs);
+        dbg!("{:?}", result);
 
         Ok(())
     }

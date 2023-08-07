@@ -108,13 +108,13 @@ pub async fn get_song_recommendations(id: &str) -> Result<Vec<SongResponse>, req
 ///
 /// * `Vec<SongRequest>` - Vector of SongRequest
 fn parse_song_value(serde_value: Value) -> Vec<SongRequest> {
-    let songs = serde_value["songs"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .map(|song| from_value(song.clone()).unwrap())
-        .collect();
-    songs
+    match serde_value["songs"].as_array() {
+        Some(songs) => songs
+            .iter()
+            .map(|song| from_value(song.clone()).unwrap())
+            .collect(),
+        None => vec![],
+    }
 }
 
 #[cfg(test)]

@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use super::{
-    artist::AlbumArtistRequest,
+    artist::{ArtistMiniRequest, ArtistMiniResponse},
     quality::Quality,
     song::{SongRequest, SongResponse},
 };
@@ -40,7 +40,7 @@ pub struct PlaylistRequestMoreInfo {
     pub share: String,
     pub meta_html: Option<String>,
     pub video_count: String,
-    pub artists: Vec<AlbumArtistRequest>,
+    pub artists: Vec<ArtistMiniRequest>,
     pub subtitle_desc: Vec<String>,
 }
 
@@ -72,7 +72,7 @@ pub struct PlaylistResponse {
     pub fan_count: u64,
     pub share: u64,
     pub video_count: u64,
-    pub artists: Vec<AlbumArtistRequest>,
+    pub artists: Vec<ArtistMiniResponse>,
     pub subtitle_desc: Vec<String>,
     pub songs: Vec<SongResponse>,
 }

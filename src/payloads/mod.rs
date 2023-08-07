@@ -1,4 +1,5 @@
 pub mod album_paylaod;
+pub mod artist_payload;
 pub mod modules_payload;
 pub mod playlist_payload;
 pub mod song_payload;

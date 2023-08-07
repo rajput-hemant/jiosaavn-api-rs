@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use super::{
-    artist::ArtistMap,
+    artist::{ArtistMapRequest, ArtistMapResponse},
     quality::Quality,
     song::{SongRequest, SongResponse},
 };
@@ -13,7 +13,7 @@ pub enum AlbumSongList {
     List(Vec<SongRequest>),
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct AlbumRequest {
     pub id: String,
     pub title: String,
@@ -33,11 +33,11 @@ pub struct AlbumRequest {
     pub list: AlbumSongList,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct AlbumRequestMoreInfo {
     pub release_date: Option<String>,
     #[serde(rename = "artistMap")]
-    pub artist_map: Option<ArtistMap>,
+    pub artist_map: Option<ArtistMapRequest>,
     pub song_count: Option<String>,
     pub copyright_text: Option<String>,
     pub is_dolby_content: Option<bool>,
@@ -62,7 +62,7 @@ pub struct AlbumResponse {
     pub image: Quality,
     pub release_date: Option<String>,
     #[serde(rename = "artistMap")]
-    pub artist_map: Option<ArtistMap>,
+    pub artist_map: Option<ArtistMapResponse>,
     pub song_count: Option<u64>,
     pub copyright_text: Option<String>,
     pub is_dolby_content: Option<bool>,

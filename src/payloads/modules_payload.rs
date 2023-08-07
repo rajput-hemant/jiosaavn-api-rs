@@ -6,7 +6,7 @@ use crate::{
     utils::{create_image_links, parse_explicit_content},
 };
 
-use super::album_paylaod::album_payload;
+use super::{album_paylaod::album_payload, artist_payload::artist_map_payload};
 
 /// Create modules payload from modules request
 ///
@@ -108,7 +108,7 @@ pub fn modules_paylod(modules: ModulesRequest) -> ModulesResponse {
                 url: trending.perma_url,
                 explicit: parse_explicit_content(trending.explicit_content),
                 language: trending.language,
-                artist_map: trending.more_info.artist_map,
+                artist_map: trending.more_info.artist_map.map(artist_map_payload),
                 play_count: trending.play_count.parse().unwrap_or_default(),
                 year: trending.year.parse().unwrap_or_default(),
                 firstname: trending.more_info.firstname,
