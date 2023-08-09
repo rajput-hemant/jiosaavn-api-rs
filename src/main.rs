@@ -21,7 +21,7 @@ async fn main() {
     let app = Router::new()
         .route("/", get(root))
         // home modules / launch data
-        .route("/modules", get(modules_handler::modules_handler))
+        .route("/modules", get(modules_handler))
         // song details route
         .route("/song", get(song_details_handler))
         .route("/song/recommendations", get(recommend_songs_handler))

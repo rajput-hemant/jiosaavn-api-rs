@@ -1,4 +1,4 @@
-use crate::{models::modules::ModulesResponse, payloads::modules_paylod};
+use crate::{models::modules::ModulesResponse, payloads::modules_payload};
 
 use super::api_service::http;
 
@@ -17,7 +17,7 @@ use super::api_service::http;
 /// * `Result<ModulesResponse, reqwest::Error>` - Result of modules payload
 pub async fn get_modules(languages: &str) -> Result<ModulesResponse, reqwest::Error> {
     let result = http(
-        "content.getBrowseModules", // `webapi.getLaunchData`
+        "webapi.getLaunchData", // `content.getBrowseModules`
         true,
         Some(
             vec![("language".to_string(), languages.to_string())]
@@ -27,7 +27,7 @@ pub async fn get_modules(languages: &str) -> Result<ModulesResponse, reqwest::Er
     )
     .await?;
 
-    Ok(modules_paylod(result))
+    Ok(modules_payload(result))
 }
 
 #[cfg(test)]

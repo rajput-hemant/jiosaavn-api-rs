@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{
     artist::{ArtistMapRequest, ArtistMapResponse},
+    misc::Rights,
     quality::Quality,
     song::{SongRequest, SongResponse},
 };
@@ -18,7 +19,6 @@ pub struct AlbumRequest {
     pub id: String,
     pub title: String,
     pub subtitle: String,
-    pub header_desc: String,
     #[serde(rename = "type")]
     pub type_field: String,
     pub perma_url: String,
@@ -42,6 +42,21 @@ pub struct AlbumRequestMoreInfo {
     pub copyright_text: Option<String>,
     pub is_dolby_content: Option<bool>,
     pub meta_html: Option<String>,
+    #[serde(rename = "320kbps")]
+    pub _320kbps: Option<String>,
+    pub album: Option<String>,
+    pub album_id: Option<String>,
+    pub album_url: Option<String>,
+    pub duration: Option<String>,
+    pub encrypted_cache_url: Option<String>,
+    pub encrypted_media_url: Option<String>,
+    pub has_lyrics: Option<String>,
+    pub label: Option<String>,
+    pub label_url: Option<String>,
+    pub lyrics_snippet: Option<String>,
+    pub music: Option<String>,
+    pub origin: Option<String>,
+    pub rights: Option<Rights>,
 }
 
 /*---------------------- Response ---------------------- */
