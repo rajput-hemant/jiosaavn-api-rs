@@ -11,7 +11,6 @@ pub struct SongRequest {
     pub id: String,
     pub title: Option<String>,
     pub subtitle: String,
-    pub header_desc: String,
     #[serde(rename = "type")]
     pub type_field: String,
     pub perma_url: String,
@@ -38,7 +37,6 @@ pub struct SongRequestMoreInfo {
     #[serde(rename = "320kbps")]
     pub _320kbps: String,
     pub encrypted_media_url: String,
-    pub encrypted_cache_url: String,
     pub album_url: String,
     pub duration: String,
     pub rights: Rights,
@@ -50,8 +48,6 @@ pub struct SongRequestMoreInfo {
     #[serde(rename = "artistMap")]
     pub artist_map: ArtistMapRequest,
     pub release_date: Option<String>,
-    pub vcode: Option<String>,
-    pub vlink: Option<String>,
     pub triller_available: bool,
     pub webp: String,
     pub lyrics_id: Option<String>,
@@ -85,8 +81,7 @@ pub struct SongResponse {
     pub is_dolby_content: bool,
     #[serde(rename = "320kbps")]
     pub _320kbps: bool,
-    pub encrypted_media_url: String,
-    pub encrypted_cache_url: String,
+    pub download_url: Quality,
     pub album_url: String,
     pub duration: u64,
     pub rights: Rights,
@@ -98,8 +93,6 @@ pub struct SongResponse {
     #[serde(rename = "artistMap")]
     pub artist_map: ArtistMapResponse,
     pub release_date: String,
-    pub vcode: Option<String>,
-    pub vlink: Option<String>,
     pub triller_available: bool,
     pub lyrics_id: Option<String>,
 }

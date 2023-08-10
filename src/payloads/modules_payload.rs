@@ -6,7 +6,7 @@ use crate::{
         ModulesResponse, PromoRequest, PromoResponse, RadioRequest, RadioResponse, TagMixRequest,
         TagMixResponse, TrendingRequest, TrendingResponse,
     },
-    utils::{create_image_links, parse_explicit_content},
+    utils::{create_download_links, create_image_links, parse_explicit_content, parse_type},
 };
 
 use super::{album_paylaod::album_payload, artist_payload::artist_map_payload};
@@ -44,12 +44,15 @@ pub fn modules_payload(modules: ModulesRequest) -> ModulesResponse {
             featured_text: modules.modules.charts.featured_text,
             data: modules.charts.into_iter().map(chart_payload).collect(),
         },
-        city_mod: Module {
-            title: modules.modules.city_mod.title,
-            subtitle: modules.modules.city_mod.subtitle,
-            featured_text: modules.modules.city_mod.featured_text,
-            data: modules.city_mod.into_iter().map(city_mod_payload).collect(),
-        },
+        city_mod: modules.city_mod.map(|city_mod| {
+            let more_info = modules.modules.city_mod.unwrap_or_default();
+            Module {
+                title: more_info.title,
+                subtitle: more_info.subtitle,
+                featured_text: more_info.featured_text,
+                data: city_mod.into_iter().map(city_mod_payload).collect(),
+            }
+        }),
         global_config: modules.global_config,
         albums: Module {
             title: modules.modules.new_albums.title,
@@ -171,7 +174,7 @@ pub fn modules_payload(modules: ModulesRequest) -> ModulesResponse {
 fn artist_reco_payload(artist: ArtistRecoRequest) -> ArtistRecoResponse {
     ArtistRecoResponse {
         id: artist.id,
-        image: create_image_links(&artist.image),
+        image: create_image_links(artist.image),
         name: artist.title,
         type_field: artist.type_field,
         url: artist.perma_url,
@@ -186,14 +189,14 @@ fn artist_reco_payload(artist: ArtistRecoRequest) -> ArtistRecoResponse {
 fn discover_payload(discover: DiscoverRequest) -> DiscoverResonse {
     DiscoverResonse {
         id: discover.id,
-        image: create_image_links(&discover.image),
+        image: create_image_links(discover.image),
         name: discover.title,
         type_field: discover.type_field,
         url: discover.perma_url,
         subtitle: discover.subtitle,
         explicit: parse_explicit_content(discover.explicit_content),
         badge: discover.more_info.badge,
-        is_featured: discover.more_info.is_featured.parse().unwrap_or_default(),
+        is_featured: parse_type(discover.more_info.is_featured),
         sub_type: discover.more_info.sub_type,
         video_thumbnail: discover.more_info.video_thumbnail,
         video_url: discover.more_info.video_url,
@@ -204,7 +207,7 @@ fn chart_payload(chart: ChartRequest) -> ChartResponse {
     let more_info = chart.more_info.unwrap_or_default();
     ChartResponse {
         id: chart.id,
-        image: create_image_links(&chart.image),
+        image: create_image_links(chart.image),
         name: chart.title,
         type_field: chart.type_field,
         url: chart.perma_url,
@@ -221,12 +224,12 @@ fn chart_payload(chart: ChartRequest) -> ChartResponse {
 fn city_mod_payload(city_mod: CityModRequest) -> CityModResponse {
     CityModResponse {
         id: city_mod.id,
-        image: create_image_links(&city_mod.image),
+        image: create_image_links(city_mod.image),
         url: city_mod.perma_url,
         subtitle: city_mod.subtitle,
         name: city_mod.title,
         type_field: city_mod.type_field,
-        explicit: city_mod.explicit_content.parse().unwrap_or_default(),
+        explicit: parse_type(city_mod.explicit_content),
         query: city_mod.more_info.query,
         album_id: city_mod.more_info.album_id,
         featured_station_type: city_mod.more_info.featured_station_type,
@@ -257,19 +260,16 @@ fn trending_payload(trending: TrendingRequest) -> TrendingResponse {
         subtitle: trending.subtitle,
         field: trending.type_field,
         url: trending.perma_url,
-        image: create_image_links(&trending.image),
+        image: create_image_links(trending.image),
         language: trending.language,
-        year: trending.year.parse().unwrap_or_default(),
-        play_count: trending.play_count.parse().unwrap_or_default(),
-        explicit: trending.explicit_content.parse().unwrap_or_default(),
-        list_count: trending.list_count.parse().unwrap_or_default(),
+        year: parse_type(trending.year),
+        play_count: parse_type(trending.play_count),
+        explicit: parse_type(trending.explicit_content),
+        list_count: parse_type(trending.list_count),
         list_type: trending.list_type,
         list: trending.list,
         release_date: trending.more_info.release_date,
-        song_count: trending
-            .more_info
-            .song_count
-            .map(|s| s.parse().unwrap_or_default()),
+        song_count: trending.more_info.song_count.map(parse_type),
         artist_map: trending.more_info.artist_map.map(artist_map_payload),
         music: trending.more_info.music,
         album_id: trending.more_info.album_id,
@@ -277,17 +277,13 @@ fn trending_payload(trending: TrendingRequest) -> TrendingResponse {
         label: trending.more_info.label,
         origin: trending.more_info.origin,
         is_dolby_content: trending.more_info.is_dolby_content,
-        _320kbps: trending
+        _320kbps: trending.more_info._320kbps.map(parse_type),
+        download_url: trending
             .more_info
-            ._320kbps
-            .map(|s| s.parse().unwrap_or_default()),
-        encrypted_media_url: trending.more_info.encrypted_media_url,
-        encrypted_cache_url: trending.more_info.encrypted_cache_url,
+            .encrypted_media_url
+            .map(create_download_links),
         album_url: trending.more_info.album_url,
-        duration: trending
-            .more_info
-            .duration
-            .map(|s| s.parse().unwrap_or_default()),
+        duration: trending.more_info.duration.map(parse_type),
         rights: trending.more_info.rights,
         cache_state: trending.more_info.cache_state,
         has_lyrics: trending.more_info.has_lyrics,
@@ -296,14 +292,8 @@ fn trending_payload(trending: TrendingRequest) -> TrendingResponse {
         label_url: trending.more_info.label_url,
         lyrics_id: trending.more_info.lyrics_id,
         firstname: trending.more_info.firstname,
-        follower_count: trending
-            .more_info
-            .follower_count
-            .map(|s| s.parse().unwrap_or_default()),
-        fan_count: trending
-            .more_info
-            .fan_count
-            .map(|s| s.parse().unwrap_or_default()),
+        follower_count: trending.more_info.follower_count.map(parse_type),
+        fan_count: trending.more_info.fan_count.map(parse_type),
     }
 }
 
@@ -313,16 +303,16 @@ fn module_playlist_payload(playlist: ModulePlaylistRequest) -> ModulePlaylistRes
         name: playlist.title,
         subtitle: playlist.subtitle,
         type_field: playlist.type_field,
-        image: create_image_links(&playlist.image),
+        image: create_image_links(playlist.image),
         url: playlist.perma_url,
-        explicit: playlist.explicit_content.parse().unwrap_or_default(),
-        song_count: playlist.more_info.song_count.parse().unwrap_or_default(),
+        explicit: parse_type(playlist.explicit_content),
+        song_count: parse_type(playlist.more_info.song_count),
         follower_count: playlist
             .more_info
             .follower_count
             .parse()
             .unwrap_or_default(),
-        last_updated: playlist.more_info.last_updated.parse().unwrap_or_default(),
+        last_updated: parse_type(playlist.more_info.last_updated),
         firstname: playlist.more_info.firstname,
         user_id: playlist.more_info.uid,
     }
@@ -334,15 +324,15 @@ fn tag_mixes_payload(mixes: TagMixRequest) -> TagMixResponse {
         name: mixes.title,
         subtitle: mixes.subtitle,
         type_field: mixes.type_field,
-        image: create_image_links(&mixes.image),
+        image: create_image_links(mixes.image),
         url: mixes.perma_url,
-        explicit: mixes.explicit_content.parse().unwrap_or_default(),
+        explicit: parse_type(mixes.explicit_content),
         language: mixes.language,
-        list_count: mixes.list_count.parse().unwrap_or_default(),
+        list_count: parse_type(mixes.list_count),
         list_type: mixes.list_type,
         list: mixes.list,
-        play_count: mixes.play_count.parse().unwrap_or_default(),
-        year: mixes.year.parse().unwrap_or_default(),
+        play_count: parse_type(mixes.play_count),
+        year: parse_type(mixes.year),
         firstname: mixes.more_info.firstname,
         lastname: mixes.more_info.lastname,
     }
@@ -354,9 +344,9 @@ fn radio_payload(radio: RadioRequest) -> RadioResponse {
         name: radio.title,
         subtitle: radio.subtitle,
         type_field: radio.type_field,
-        image: create_image_links(&radio.image),
+        image: create_image_links(radio.image),
         url: radio.perma_url,
-        explicit: radio.explicit_content.parse().unwrap_or_default(),
+        explicit: parse_type(radio.explicit_content),
         description: radio.more_info.description,
         featured_station_type: radio.more_info.featured_station_type,
         query: radio.more_info.query,
@@ -369,24 +359,21 @@ fn radio_payload(radio: RadioRequest) -> RadioResponse {
 fn promo_payload(promo: PromoRequest) -> PromoResponse {
     PromoResponse {
         id: promo.id,
-        image: create_image_links(&promo.image),
+        image: create_image_links(promo.image),
         url: promo.perma_url,
         subtitle: promo.subtitle,
         name: promo.title,
         type_field: promo.type_field,
         language: promo.language,
         list: promo.list,
-        list_count: promo.list_count.map(|s| s.parse().unwrap_or_default()),
+        list_count: promo.list_count.map(parse_type),
         list_type: promo.list_type,
-        play_count: promo.play_count.map(|s| s.parse().unwrap_or_default()),
-        year: promo.year.map(|s| s.parse().unwrap_or_default()),
-        explicit: promo.explicit_content.parse().unwrap_or_default(),
+        play_count: promo.play_count.map(parse_type),
+        year: promo.year.map(parse_type),
+        explicit: parse_type(promo.explicit_content),
         square_image: promo.more_info.square_image,
         editorial_language: promo.more_info.editorial_language,
-        position: promo
-            .more_info
-            .position
-            .map(|s| s.parse().unwrap_or_default()),
+        position: promo.more_info.position.map(parse_type),
         release_year: promo.more_info.release_year,
     }
 }

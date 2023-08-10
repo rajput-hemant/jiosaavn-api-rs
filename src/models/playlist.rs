@@ -11,7 +11,6 @@ pub struct PlaylistRequest {
     pub id: String,
     pub title: String,
     pub subtitle: String,
-    pub header_desc: String,
     #[serde(rename = "type")]
     pub type_field: String,
     pub perma_url: String,
@@ -38,7 +37,6 @@ pub struct PlaylistRequestMoreInfo {
     pub fan_count: String,
     pub playlist_type: String,
     pub share: String,
-    pub meta_html: Option<String>,
     pub video_count: String,
     pub artists: Vec<ArtistMiniRequest>,
     pub subtitle_desc: Vec<String>,

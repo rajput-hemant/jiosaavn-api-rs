@@ -60,6 +60,7 @@ async fn main() {
         );
 
     // rate limit layer
+    // https://github.com/tokio-rs/axum/discussions/987#discussioncomment-2678595
     if enable_rate_limit {
         router = router.layer(
             ServiceBuilder::new()

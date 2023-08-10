@@ -5,7 +5,7 @@ use crate::{
         ArtistSongsResponse, ArtistTopAlbums, ArtistTopSongs, SimilarArtistRequest,
         SimilarArtistResponse,
     },
-    utils::create_image_links,
+    utils::{create_image_links, parse_type},
 };
 
 use super::{album_payload, song_payload};
@@ -15,8 +15,8 @@ pub fn artist_payload(artist: ArtistRequest) -> ArtistResponse {
         id: artist.artist_id,
         name: artist.name,
         subtitle: artist.subtitle,
-        image: create_image_links(&artist.image),
-        follower_count: artist.follower_count.parse().unwrap_or_default(),
+        image: create_image_links(artist.image),
+        follower_count: parse_type(artist.follower_count),
         type_field: artist.type_field,
         is_verified: artist.is_verified,
         dominant_language: artist.dominant_language,
@@ -36,7 +36,7 @@ pub fn artist_payload(artist: ArtistRequest) -> ArtistResponse {
         wiki: artist.wiki,
         urls: artist.urls,
         available_languages: artist.available_languages,
-        fan_count: artist.fan_count.parse().unwrap_or_default(),
+        fan_count: parse_type(artist.fan_count),
         is_followed: artist.is_followed,
     }
 }
@@ -52,7 +52,7 @@ pub fn similar_artist_payload(similar_artist: SimilarArtistRequest) -> SimilarAr
         wiki: similar_artist.wiki,
         similar: similar_artist.similar,
         dob: similar_artist.dob,
-        image_url: create_image_links(&similar_artist.image_url),
+        image_url: create_image_links(similar_artist.image_url),
         search_keywords: similar_artist.search_keywords,
         primary_artist_id: similar_artist.primary_artist_id,
         combine_artist_pages: similar_artist.combine_artist_pages,
@@ -99,8 +99,8 @@ pub fn artist_songs_payload(artist_songs: ArtistSongsRequest) -> ArtistSongsResp
     ArtistSongsResponse {
         id: artist_songs.artist_id,
         name: artist_songs.name,
-        image: create_image_links(&artist_songs.image),
-        follower_count: artist_songs.follower_count.parse().unwrap_or_default(),
+        image: create_image_links(artist_songs.image),
+        follower_count: parse_type(artist_songs.follower_count),
         type_field: artist_songs.type_field,
         is_verified: artist_songs.is_verified,
         dominant_language: artist_songs.dominant_language,
@@ -122,8 +122,8 @@ pub fn artist_albums_payload(artist_albums: ArtistAlbumsRequest) -> ArtistAlbums
     ArtistAlbumsResponse {
         id: artist_albums.artist_id,
         name: artist_albums.name,
-        image: create_image_links(&artist_albums.image),
-        follower_count: artist_albums.follower_count.parse().unwrap_or_default(),
+        image: create_image_links(artist_albums.image),
+        follower_count: parse_type(artist_albums.follower_count),
         type_field: artist_albums.type_field,
         is_verified: artist_albums.is_verified,
         dominant_language: artist_albums.dominant_language,

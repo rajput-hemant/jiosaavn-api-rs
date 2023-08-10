@@ -41,14 +41,12 @@ pub struct AlbumRequestMoreInfo {
     pub song_count: Option<String>,
     pub copyright_text: Option<String>,
     pub is_dolby_content: Option<bool>,
-    pub meta_html: Option<String>,
     #[serde(rename = "320kbps")]
     pub _320kbps: Option<String>,
     pub album: Option<String>,
     pub album_id: Option<String>,
     pub album_url: Option<String>,
     pub duration: Option<String>,
-    pub encrypted_cache_url: Option<String>,
     pub encrypted_media_url: Option<String>,
     pub has_lyrics: Option<String>,
     pub label: Option<String>,
@@ -81,6 +79,5 @@ pub struct AlbumResponse {
     pub song_count: Option<u64>,
     pub copyright_text: Option<String>,
     pub is_dolby_content: Option<bool>,
-    pub meta_html: Option<String>,
     pub songs: Vec<SongResponse>,
 }

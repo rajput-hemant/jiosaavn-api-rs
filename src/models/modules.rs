@@ -12,7 +12,7 @@ pub struct ModulesRequest {
     pub artist_recos: Vec<ArtistRecoRequest>,
     pub browse_discover: Vec<DiscoverRequest>,
     pub charts: Vec<ChartRequest>,
-    pub city_mod: Vec<CityModRequest>,
+    pub city_mod: Option<Vec<CityModRequest>>,
     pub global_config: GlobalConfig,
     pub new_albums: Vec<AlbumRequest>,
     pub new_trending: Vec<TrendingRequest>,
@@ -119,8 +119,6 @@ pub struct CityModRequestMultipleTune {
     pub title: String,
     #[serde(rename = "type")]
     pub type_field: String,
-    pub vcode: String,
-    pub vlink: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -276,7 +274,6 @@ pub struct TrendingMoreInfo {
     #[serde(rename = "320kbps")]
     pub _320kbps: Option<String>,
     pub encrypted_media_url: Option<String>,
-    pub encrypted_cache_url: Option<String>,
     pub album_url: Option<String>,
     pub duration: Option<String>,
     pub rights: Option<Rights>,
@@ -287,8 +284,6 @@ pub struct TrendingMoreInfo {
     pub copyright_text: Option<String>,
     pub is_ringtone_available: Option<bool>,
     pub label_url: Option<String>,
-    pub vcode: Option<String>,
-    pub vlink: Option<String>,
     pub triller_available: Option<bool>,
     pub request_jiotune_flag: Option<bool>,
     pub webp: Option<String>,
@@ -353,7 +348,7 @@ pub struct PromoRequestMoreInfo {
 pub struct ModuleRequest {
     pub radio: ModuleItemRequest,
     pub charts: ModuleItemRequest,
-    pub city_mod: ModuleItemRequest,
+    pub city_mod: Option<ModuleItemRequest>,
     pub tag_mixes: ModuleItemRequest,
     pub new_albums: ModuleItemRequest,
     pub new_trending: ModuleItemRequest,
@@ -385,7 +380,7 @@ pub struct ModuleRequest {
     pub promo_90: ModuleItemRequest,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Default, Debug, Serialize, Deserialize)]
 pub struct ModuleItemRequest {
     pub title: String,
     pub subtitle: String,
@@ -408,7 +403,7 @@ pub struct ModulesResponse {
     pub artist_recos: Module<Vec<ArtistRecoResponse>>,
     pub discover: Vec<DiscoverResonse>,
     pub charts: Module<Vec<ChartResponse>>,
-    pub city_mod: Module<Vec<CityModResponse>>,
+    pub city_mod: Option<Module<Vec<CityModResponse>>>,
     pub global_config: GlobalConfig,
     pub albums: Module<Vec<AlbumResponse>>,
     pub trending: Module<Vec<TrendingResponse>>,
@@ -576,8 +571,7 @@ pub struct TrendingResponse {
     pub is_dolby_content: Option<bool>,
     #[serde(rename = "320kbps")]
     pub _320kbps: Option<bool>,
-    pub encrypted_media_url: Option<String>,
-    pub encrypted_cache_url: Option<String>,
+    pub download_url: Option<Quality>,
     pub album_url: Option<String>,
     pub duration: Option<u64>,
     pub rights: Option<Rights>,
