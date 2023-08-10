@@ -16,6 +16,6 @@ WORKDIR /app
 
 COPY --from=build /app/target/release/jiosaavn .
 
-EXPOSE 3000
+EXPOSE 8080
 
 CMD ["./jiosaavn"]

@@ -6,12 +6,12 @@
 
 ### A wrapper for JioSaavn API written in Rust programming language 🦀.
 
+</div>
+
 > [!NOTE]
 > This project is for educational purposes only. The author of this project is not responsible for any misuse of this API. Use it at your own risk.
 
 ## 🔨 Local Development
-
-</div>
 
 - Rust should be installed on your system. If not, then install it from [here](https://www.rust-lang.org/tools/install).
 
@@ -33,6 +33,40 @@ cargo build
 ```
 
 ## Deploying your own instance
+
+### Build and Run the Docker Image (**_Recommended_**)
+
+> [!WARNING]
+> You need to have [Docker](https://docs.docker.com/get-docker/) installed on your system.
+> You might need to run the following commands with `sudo` depending on your system.
+
+- Start Docker daemon (Skip if already running)
+
+```
+sudo dockerd
+```
+
+- Build the image
+
+```
+docker build -t jiosaavn .
+```
+
+- Run the image
+
+```
+docker run -p 8080:8080 jiosaavn
+```
+
+- Stop the container
+
+```
+docker ps
+```
+
+```
+docker stop <container-id>
+```
 
 ### [Shuttle.rs](https://shuttle.rs/)
 
