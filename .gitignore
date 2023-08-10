@@ -1,4 +1,8 @@
 # VS Code
 .vscode
 
+# Rust
 /target
+
+.env
+*.local
