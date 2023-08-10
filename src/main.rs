@@ -5,7 +5,6 @@ pub mod services;
 pub mod utils;
 
 use axum::{http::Method, routing::get, Router};
-use std::net::SocketAddr;
 use tower_http::cors::{Any, CorsLayer};
 
 use handlers::{
@@ -18,7 +17,7 @@ use handlers::{
 async fn main() {
     tracing_subscriber::fmt::init();
 
-    let app = Router::new()
+    let router = Router::new()
         .route("/", get(root))
         // home modules / launch data
         .route("/modules", get(modules_handler))
@@ -45,10 +44,11 @@ async fn main() {
                 .allow_methods([Method::GET]),
         );
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let addr = "[::]:8080".parse().unwrap();
+
     tracing::debug!("🚀 Server listening on {}", addr);
     axum::Server::bind(&addr)
-        .serve(app.into_make_service())
+        .serve(router.into_make_service())
         .await
         .unwrap();
 }
