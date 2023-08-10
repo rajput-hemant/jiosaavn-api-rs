@@ -16,9 +16,11 @@ use tower::{buffer::BufferLayer, limit::RateLimitLayer, ServiceBuilder};
 use tower_http::cors::{Any, CorsLayer};
 
 use handlers::{
-    album_details_handler, artist_albums_handler, artist_details_handler, artist_songs_handler,
-    modules_handler, playlist_details_handler, recommend_albums_handler,
-    recommend_artists_songs_handler, recommend_songs_handler, song_details_handler,
+    album_details_handler, albums_search_handler, artist_albums_handler, artist_details_handler,
+    artist_songs_handler, artists_search_handler, modules_handler, playlist_details_handler,
+    playlists_search_handler, recommend_albums_handler, recommend_artists_songs_handler,
+    recommend_songs_handler, search_all_handler, song_details_handler, songs_search_handler,
+    top_searches_handler,
 };
 
 #[tokio::main]
@@ -52,6 +54,14 @@ async fn main() {
             "/artist/recommendations",
             get(recommend_artists_songs_handler),
         )
+        // search routes
+        .route("/search", get(search_all_handler))
+        .route("/search/all", get(search_all_handler))
+        .route("/search/top", get(top_searches_handler))
+        .route("/search/songs", get(songs_search_handler))
+        .route("/search/albums", get(albums_search_handler))
+        .route("/search/artists", get(artists_search_handler))
+        .route("/search/playlists", get(playlists_search_handler))
         // cors layer
         .layer(
             CorsLayer::new()

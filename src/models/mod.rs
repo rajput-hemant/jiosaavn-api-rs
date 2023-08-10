@@ -5,4 +5,5 @@ pub mod modules;
 pub mod playlist;
 pub mod quality;
 pub mod response;
+pub mod search;
 pub mod song;
