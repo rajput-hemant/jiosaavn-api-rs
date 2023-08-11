@@ -1,5 +1,5 @@
-#![allow(unused_variables)]
-
+use base64::{engine::general_purpose, Engine as _};
+use openssl::symm::{decrypt, Cipher};
 use std::str::FromStr;
 
 use crate::models::quality::{Quality, QualityObject};
@@ -23,11 +23,29 @@ pub fn create_download_links(encrypted_media_url: String) -> Quality {
     ];
 
     let key = b"38346591";
-    let iv = b"00000000";
 
-    // TODO: Add support for different qualities
+    let encrypted_data = general_purpose::STANDARD
+        .decode(&encrypted_media_url.as_bytes())
+        .unwrap();
 
-    Quality::String(encrypted_media_url)
+    let cipher = Cipher::des_ecb();
+    let dechipher = decrypt(cipher, key, None, &encrypted_data);
+
+    if dechipher.is_err() {
+        return Quality::String(encrypted_media_url);
+    }
+
+    let decrypted_link = String::from_utf8(dechipher.unwrap()).unwrap();
+
+    let download_links = qualities
+        .into_iter()
+        .map(|quality| QualityObject {
+            quality: quality.1.to_string(),
+            link: decrypted_link.replace("_96", &format!("{}", quality.0)),
+        })
+        .collect();
+
+    Quality::List(download_links)
 }
 
 /// Utility function for creating image links of different qualities

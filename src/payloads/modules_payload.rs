@@ -6,10 +6,10 @@ use crate::{
         ModulesResponse, PromoRequest, PromoResponse, RadioRequest, RadioResponse, TagMixRequest,
         TagMixResponse, TrendingRequest, TrendingResponse,
     },
-    utils::{create_download_links, create_image_links, parse_explicit_content, parse_type},
+    utils::{create_image_links, parse_explicit_content, parse_type},
 };
 
-use super::{album_paylaod::album_payload, artist_payload::artist_map_payload};
+use super::album_paylaod::album_payload;
 
 /// Create modules payload from modules request
 ///
@@ -268,32 +268,6 @@ fn trending_payload(trending: TrendingRequest) -> TrendingResponse {
         list_count: parse_type(trending.list_count),
         list_type: trending.list_type,
         list: trending.list,
-        release_date: trending.more_info.release_date,
-        song_count: trending.more_info.song_count.map(parse_type),
-        artist_map: trending.more_info.artist_map.map(artist_map_payload),
-        music: trending.more_info.music,
-        album_id: trending.more_info.album_id,
-        album: trending.more_info.album,
-        label: trending.more_info.label,
-        origin: trending.more_info.origin,
-        is_dolby_content: trending.more_info.is_dolby_content,
-        _320kbps: trending.more_info._320kbps.map(parse_type),
-        download_url: trending
-            .more_info
-            .encrypted_media_url
-            .map(create_download_links),
-        album_url: trending.more_info.album_url,
-        duration: trending.more_info.duration.map(parse_type),
-        rights: trending.more_info.rights,
-        cache_state: trending.more_info.cache_state,
-        has_lyrics: trending.more_info.has_lyrics,
-        lyrics_snippet: trending.more_info.lyrics_snippet,
-        copyright_text: trending.more_info.copyright_text,
-        label_url: trending.more_info.label_url,
-        lyrics_id: trending.more_info.lyrics_id,
-        firstname: trending.more_info.firstname,
-        follower_count: trending.more_info.follower_count.map(parse_type),
-        fan_count: trending.more_info.fan_count.map(parse_type),
     }
 }
 

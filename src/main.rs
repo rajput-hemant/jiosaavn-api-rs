@@ -1,8 +1,8 @@
-pub mod handlers;
-pub mod models;
-pub mod payloads;
-pub mod services;
-pub mod utils;
+mod handlers;
+mod models;
+mod payloads;
+mod services;
+mod utils;
 
 use axum::{
     error_handling::HandleErrorLayer,

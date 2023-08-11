@@ -2,8 +2,6 @@ use serde::{Deserialize, Serialize};
 
 use super::{
     album::{AlbumRequest, AlbumResponse},
-    artist::{ArtistMapRequest, ArtistMapResponse},
-    misc::Rights,
     quality::Quality,
 };
 
@@ -256,43 +254,6 @@ pub struct TrendingRequest {
     pub list_count: String,
     pub list_type: String,
     pub list: String,
-    pub more_info: TrendingMoreInfo,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct TrendingMoreInfo {
-    pub release_date: Option<String>,
-    pub song_count: Option<String>,
-    #[serde(rename = "artistMap")]
-    pub artist_map: Option<ArtistMapRequest>,
-    pub music: Option<String>,
-    pub album_id: Option<String>,
-    pub album: Option<String>,
-    pub label: Option<String>,
-    pub origin: Option<String>,
-    pub is_dolby_content: Option<bool>,
-    #[serde(rename = "320kbps")]
-    pub _320kbps: Option<String>,
-    pub encrypted_media_url: Option<String>,
-    pub album_url: Option<String>,
-    pub duration: Option<String>,
-    pub rights: Option<Rights>,
-    pub cache_state: Option<String>,
-    pub has_lyrics: Option<String>,
-    pub lyrics_snippet: Option<String>,
-    pub starred: Option<String>,
-    pub copyright_text: Option<String>,
-    pub is_ringtone_available: Option<bool>,
-    pub label_url: Option<String>,
-    pub triller_available: Option<bool>,
-    pub request_jiotune_flag: Option<bool>,
-    pub webp: Option<String>,
-    pub lyrics_id: Option<String>,
-    #[serde(rename = "isWeekly")]
-    pub is_weekly: Option<String>,
-    pub firstname: Option<String>,
-    pub follower_count: Option<String>,
-    pub fan_count: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -516,7 +477,7 @@ pub struct RadioResponse {
     pub type_field: String,
     pub image: Quality,
     pub url: String,
-    pub explicit: String,
+    pub explicit: bool,
     pub description: String,
     pub featured_station_type: String,
     pub query: String,
@@ -559,32 +520,6 @@ pub struct TrendingResponse {
     pub list_count: u64,
     pub list_type: String,
     pub list: String,
-    pub release_date: Option<String>,
-    pub song_count: Option<u64>,
-    #[serde(rename = "artistMap")]
-    pub artist_map: Option<ArtistMapResponse>,
-    pub music: Option<String>,
-    pub album_id: Option<String>,
-    pub album: Option<String>,
-    pub label: Option<String>,
-    pub origin: Option<String>,
-    pub is_dolby_content: Option<bool>,
-    #[serde(rename = "320kbps")]
-    pub _320kbps: Option<bool>,
-    pub download_url: Option<Quality>,
-    pub album_url: Option<String>,
-    pub duration: Option<u64>,
-    pub rights: Option<Rights>,
-    pub cache_state: Option<String>,
-    pub has_lyrics: Option<String>,
-    pub lyrics_snippet: Option<String>,
-    pub copyright_text: Option<String>,
-    pub label_url: Option<String>,
-    pub lyrics_id: Option<String>,
-    #[serde(rename = "isWeekly")]
-    pub firstname: Option<String>,
-    pub follower_count: Option<u64>,
-    pub fan_count: Option<u64>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
