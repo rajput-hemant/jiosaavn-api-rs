@@ -17,10 +17,10 @@ use tower_http::cors::{Any, CorsLayer};
 
 use handlers::{
     album_details_handler, albums_search_handler, artist_albums_handler, artist_details_handler,
-    artist_songs_handler, artists_search_handler, modules_handler, playlist_details_handler,
-    playlists_search_handler, recommend_albums_handler, recommend_artists_songs_handler,
-    recommend_songs_handler, search_all_handler, song_details_handler, songs_search_handler,
-    top_searches_handler,
+    artist_songs_handler, artists_search_handler, create_radio_handler, modules_handler,
+    playlist_details_handler, playlists_search_handler, radio_songs_handler,
+    recommend_albums_handler, recommend_artists_songs_handler, recommend_songs_handler,
+    search_all_handler, song_details_handler, songs_search_handler, top_searches_handler,
 };
 
 #[tokio::main]
@@ -62,6 +62,9 @@ async fn main() {
         .route("/search/albums", get(albums_search_handler))
         .route("/search/artists", get(artists_search_handler))
         .route("/search/playlists", get(playlists_search_handler))
+        // radio routes
+        .route("/radio", get(create_radio_handler))
+        .route("/radio/songs", get(radio_songs_handler))
         // cors layer
         .layer(
             CorsLayer::new()

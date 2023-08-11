@@ -4,6 +4,7 @@ pub mod misc;
 pub mod modules;
 pub mod playlist;
 pub mod quality;
+pub mod radio;
 pub mod response;
 pub mod search;
 pub mod song;

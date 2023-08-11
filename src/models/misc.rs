@@ -8,3 +8,10 @@ pub struct Rights {
     pub delete_cached_object: Option<Value>,
     pub reason: Option<Value>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Union<A, B> {
+    A(A),
+    B(B),
+}

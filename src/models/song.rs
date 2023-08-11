@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{
     artist::{ArtistMapRequest, ArtistMapResponse},
-    misc::Rights,
+    misc::{Rights, Union},
     quality::Quality,
 };
 
@@ -17,7 +17,7 @@ pub struct SongRequest {
     pub image: String,
     pub language: String,
     pub year: String,
-    pub play_count: String,
+    pub play_count: Union<String, u64>,
     pub explicit_content: String,
     pub list_count: String,
     pub list_type: String,

@@ -1,5 +1,8 @@
 use crate::{
-    models::song::{SongRequest, SongResponse},
+    models::{
+        misc::Union,
+        song::{SongRequest, SongResponse},
+    },
     utils::{create_download_links, create_image_links, parse_type},
 };
 
@@ -26,7 +29,10 @@ pub fn song_payload(song: SongRequest) -> SongResponse {
             image: create_image_links(song.image),
             language: song.language,
             year: parse_type(song.year),
-            play_count: parse_type(song.play_count),
+            play_count: parse_type(match song.play_count {
+                Union::A(play_count) => play_count,
+                Union::B(play_count) => play_count.to_string(),
+            }),
             explicit_content: parse_type(song.explicit_content),
             list_count: parse_type(song.list_count),
             list_type: song.list_type,
