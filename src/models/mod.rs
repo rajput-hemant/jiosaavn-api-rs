@@ -1,5 +1,6 @@
 pub mod album;
 pub mod artist;
+pub mod lyrics;
 pub mod misc;
 pub mod modules;
 pub mod playlist;

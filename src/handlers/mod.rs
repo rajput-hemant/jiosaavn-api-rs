@@ -1,5 +1,6 @@
 pub mod album_handler;
 pub mod artist_handler;
+pub mod lyrics_handler;
 pub mod modules_handler;
 pub mod playlist_handler;
 pub mod radio_handler;
@@ -11,6 +12,7 @@ pub use artist_handler::{
     artist_albums_handler, artist_details_handler, artist_songs_handler,
     recommend_artists_songs_handler,
 };
+pub use lyrics_handler::lyrics_handler;
 pub use modules_handler::modules_handler;
 pub use playlist_handler::playlist_details_handler;
 pub use radio_handler::{create_radio_handler, radio_songs_handler};

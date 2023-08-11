@@ -1,4 +1,7 @@
+use reqwest::Error;
+
 use super::api_service::http;
+use crate::models::lyrics::Lyrics;
 
 /// Helper function to make request to `lyrics.getLyrics` endpoint of JioSaavn API to get song lyrics
 ///
@@ -8,9 +11,9 @@ use super::api_service::http;
 ///
 /// ## Returns
 ///
-/// * `Result<serde_json::Value, reqwest::Error>` - Result of lyrics payload
-pub async fn get_lyrics(song_id: &str) -> Result<serde_json::Value, reqwest::Error> {
-    let result: serde_json::Value = http(
+/// * `Result<Lyrics, Error>` - Result of lyrics payload
+pub async fn get_lyrics(song_id: &str) -> Result<Lyrics, Error> {
+    let result = http(
         "lyrics.getLyrics",
         true,
         Some(
@@ -26,12 +29,15 @@ pub async fn get_lyrics(song_id: &str) -> Result<serde_json::Value, reqwest::Err
 
 #[cfg(test)]
 mod tests {
+
     use super::*;
 
     #[tokio::test]
-    async fn test_get_lyrics() {
-        let result = get_lyrics("mPTrDSun").await.unwrap();
+    async fn test_get_lyrics() -> Result<(), Error> {
+        let result = get_lyrics("qMehA7mk").await?;
 
-        println!("{:#?}", result)
+        dbg!("{:#?}", result);
+
+        Ok(())
     }
 }
