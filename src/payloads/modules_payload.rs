@@ -100,73 +100,73 @@ pub fn modules_payload(modules: ModulesRequest) -> ModulesResponse {
             title: modules.modules.promo_107.title,
             subtitle: modules.modules.promo_107.subtitle,
             featured_text: modules.modules.promo_107.featured_text,
-            data: modules.promo_107.into_iter().map(promo_payload).collect(),
+            data: promo_payload(modules.promo_107),
         },
         promo_112: Module {
             title: modules.modules.promo_112.title,
             subtitle: modules.modules.promo_112.subtitle,
             featured_text: modules.modules.promo_112.featured_text,
-            data: modules.promo_112.into_iter().map(promo_payload).collect(),
+            data: promo_payload(modules.promo_112),
         },
         promo_113: Module {
             title: modules.modules.promo_113.title,
             subtitle: modules.modules.promo_113.subtitle,
             featured_text: modules.modules.promo_113.featured_text,
-            data: modules.promo_113.into_iter().map(promo_payload).collect(),
+            data: promo_payload(modules.promo_113),
         },
         promo_114: Module {
             title: modules.modules.promo_114.title,
             subtitle: modules.modules.promo_114.subtitle,
             featured_text: modules.modules.promo_114.featured_text,
-            data: modules.promo_114.into_iter().map(promo_payload).collect(),
+            data: promo_payload(modules.promo_114),
         },
         promo_116: Module {
             title: modules.modules.promo_116.title,
             subtitle: modules.modules.promo_116.subtitle,
             featured_text: modules.modules.promo_116.featured_text,
-            data: modules.promo_116.into_iter().map(promo_payload).collect(),
+            data: promo_payload(modules.promo_116),
         },
         promo_118: Module {
             title: modules.modules.promo_118.title,
             subtitle: modules.modules.promo_118.subtitle,
             featured_text: modules.modules.promo_118.featured_text,
-            data: modules.promo_118.into_iter().map(promo_payload).collect(),
+            data: promo_payload(modules.promo_118),
         },
         promo_176: Module {
             title: modules.modules.promo_176.title,
             subtitle: modules.modules.promo_176.subtitle,
             featured_text: modules.modules.promo_176.featured_text,
-            data: modules.promo_176.into_iter().map(promo_payload).collect(),
+            data: promo_payload(modules.promo_176),
         },
         promo_185: Module {
             title: modules.modules.promo_185.title,
             subtitle: modules.modules.promo_185.subtitle,
             featured_text: modules.modules.promo_185.featured_text,
-            data: modules.promo_185.into_iter().map(promo_payload).collect(),
+            data: promo_payload(modules.promo_185),
         },
         promo_49: Module {
             title: modules.modules.promo_49.title,
             subtitle: modules.modules.promo_49.subtitle,
             featured_text: modules.modules.promo_49.featured_text,
-            data: modules.promo_49.into_iter().map(promo_payload).collect(),
+            data: promo_payload(modules.promo_49),
         },
         promo_68: Module {
             title: modules.modules.promo_68.title,
             subtitle: modules.modules.promo_68.subtitle,
             featured_text: modules.modules.promo_68.featured_text,
-            data: modules.promo_68.into_iter().map(promo_payload).collect(),
+            data: promo_payload(modules.promo_68),
         },
         promo_76: Module {
             title: modules.modules.promo_76.title,
             subtitle: modules.modules.promo_76.subtitle,
             featured_text: modules.modules.promo_76.featured_text,
-            data: modules.promo_76.into_iter().map(promo_payload).collect(),
+            data: promo_payload(modules.promo_76),
         },
         promo_90: Module {
             title: modules.modules.promo_90.title,
             subtitle: modules.modules.promo_90.subtitle,
             featured_text: modules.modules.promo_90.featured_text,
-            data: modules.promo_90.into_iter().map(promo_payload).collect(),
+            data: promo_payload(modules.promo_90),
         },
     }
 }
@@ -329,8 +329,14 @@ fn radio_payload(radio: RadioRequest) -> RadioResponse {
         station_display_text: radio.more_info.station_display_text,
     }
 }
+fn promo_payload(promo: Option<Vec<PromoRequest>>) -> Vec<PromoResponse> {
+    match promo {
+        Some(promo) => promo.into_iter().map(promo_vec_payload).collect(),
+        None => vec![],
+    }
+}
 
-fn promo_payload(promo: PromoRequest) -> PromoResponse {
+fn promo_vec_payload(promo: PromoRequest) -> PromoResponse {
     PromoResponse {
         id: promo.id,
         image: create_image_links(promo.image),

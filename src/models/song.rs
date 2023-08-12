@@ -46,7 +46,7 @@ pub struct SongRequestMoreInfo {
     pub starred: String,
     pub copyright_text: String,
     #[serde(rename = "artistMap")]
-    pub artist_map: ArtistMapRequest,
+    pub artist_map: Union<String, ArtistMapRequest>,
     pub release_date: Option<String>,
     pub triller_available: bool,
     pub webp: String,

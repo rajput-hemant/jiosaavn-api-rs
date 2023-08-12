@@ -31,7 +31,7 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    async fn test_get_album_details_by_id() -> Result<(), reqwest::Error> {
+    async fn test_get_playlist_details_by_id() -> Result<(), reqwest::Error> {
         let result = get_playlist_details_by_id("159144718").await?;
 
         dbg!("{:?}", result);

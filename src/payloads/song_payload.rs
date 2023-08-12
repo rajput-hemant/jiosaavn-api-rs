@@ -53,7 +53,10 @@ pub fn song_payload(song: SongRequest) -> SongResponse {
             has_lyrics: parse_type(more_info.has_lyrics),
             lyrics_snippet: more_info.lyrics_snippet,
             starred: parse_type(more_info.starred),
-            artist_map: artist_map_payload(more_info.artist_map),
+            artist_map: match more_info.artist_map {
+                Union::B(map) => artist_map_payload(map),
+                _ => Default::default(),
+            },
             release_date: more_info.release_date.unwrap_or_default(),
             triller_available: more_info.triller_available,
             copyright_text: more_info.copyright_text,

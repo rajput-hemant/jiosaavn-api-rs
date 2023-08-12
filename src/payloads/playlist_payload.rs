@@ -1,5 +1,8 @@
 use crate::{
-    models::playlist::{PlaylistRequest, PlaylistResponse},
+    models::{
+        misc::Union,
+        playlist::{PlaylistRequest, PlaylistResponse},
+    },
     utils::{create_image_links, parse_explicit_content, parse_type},
 };
 
@@ -47,7 +50,10 @@ pub fn playlist_payload(playlist: PlaylistRequest) -> PlaylistResponse {
             subtitle: playlist.subtitle,
             subtitle_desc: more_info.subtitle_desc,
             year: parse_type(playlist.year),
-            songs: playlist.list.into_iter().map(song_payload).collect(),
+            songs: match playlist.list {
+                Union::A(_) => vec![],
+                Union::B(songs) => songs.into_iter().map(song_payload).collect(),
+            },
         }
     }
 }

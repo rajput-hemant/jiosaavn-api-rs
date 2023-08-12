@@ -20,29 +20,29 @@ pub struct ModulesRequest {
     pub modules: ModuleRequest,
     // pub top_shows: TopShowsRequest,
     #[serde(rename = "promo:vx:data:107")]
-    pub promo_107: Vec<PromoRequest>,
+    pub promo_107: Option<Vec<PromoRequest>>,
     #[serde(rename = "promo:vx:data:112")]
-    pub promo_112: Vec<PromoRequest>,
+    pub promo_112: Option<Vec<PromoRequest>>,
     #[serde(rename = "promo:vx:data:113")]
-    pub promo_113: Vec<PromoRequest>,
+    pub promo_113: Option<Vec<PromoRequest>>,
     #[serde(rename = "promo:vx:data:114")]
-    pub promo_114: Vec<PromoRequest>,
+    pub promo_114: Option<Vec<PromoRequest>>,
     #[serde(rename = "promo:vx:data:116")]
-    pub promo_116: Vec<PromoRequest>,
+    pub promo_116: Option<Vec<PromoRequest>>,
     #[serde(rename = "promo:vx:data:118")]
-    pub promo_118: Vec<PromoRequest>,
+    pub promo_118: Option<Vec<PromoRequest>>,
     #[serde(rename = "promo:vx:data:176")]
-    pub promo_176: Vec<PromoRequest>,
+    pub promo_176: Option<Vec<PromoRequest>>,
     #[serde(rename = "promo:vx:data:185")]
-    pub promo_185: Vec<PromoRequest>,
+    pub promo_185: Option<Vec<PromoRequest>>,
     #[serde(rename = "promo:vx:data:49")]
-    pub promo_49: Vec<PromoRequest>,
+    pub promo_49: Option<Vec<PromoRequest>>,
     #[serde(rename = "promo:vx:data:68")]
-    pub promo_68: Vec<PromoRequest>,
+    pub promo_68: Option<Vec<PromoRequest>>,
     #[serde(rename = "promo:vx:data:76")]
-    pub promo_76: Vec<PromoRequest>,
+    pub promo_76: Option<Vec<PromoRequest>>,
     #[serde(rename = "promo:vx:data:90")]
-    pub promo_90: Vec<PromoRequest>,
+    pub promo_90: Option<Vec<PromoRequest>>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

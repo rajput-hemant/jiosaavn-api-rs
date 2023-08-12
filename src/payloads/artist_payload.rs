@@ -1,9 +1,8 @@
 use crate::{
     models::artist::{
-        ArtistAlbumsRequest, ArtistAlbumsResponse, ArtistMapRequest, ArtistMapResponse,
-        ArtistMiniRequest, ArtistMiniResponse, ArtistRequest, ArtistResponse, ArtistSongsRequest,
-        ArtistSongsResponse, ArtistTopAlbums, ArtistTopSongs, SimilarArtistRequest,
-        SimilarArtistResponse,
+        ArtistAlbumsRequest, ArtistAlbumsResponse, ArtistMapResponse, ArtistMiniRequest,
+        ArtistMiniResponse, ArtistRequest, ArtistResponse, ArtistSongsRequest, ArtistSongsResponse,
+        ArtistTopAlbums, ArtistTopSongs, SimilarArtistRequest, SimilarArtistResponse, ArtistMapRequest,
     },
     utils::{create_image_links, parse_type},
 };
@@ -84,6 +83,7 @@ pub fn artist_map_payload(artist_map: ArtistMapRequest) -> ArtistMapResponse {
             .collect(),
     }
 }
+
 pub fn artist_mini_payload(artist_mini: ArtistMiniRequest) -> ArtistMiniResponse {
     ArtistMiniResponse {
         id: artist_mini.id,

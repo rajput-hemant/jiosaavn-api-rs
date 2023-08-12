@@ -189,7 +189,7 @@ pub struct SimilarArtistResponse {
     pub dominant_type: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Default, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ArtistMapResponse {
     pub primary_artists: Vec<ArtistMiniResponse>,

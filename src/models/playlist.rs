@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{
     artist::{ArtistMiniRequest, ArtistMiniResponse},
+    misc::Union,
     quality::Quality,
     song::{SongRequest, SongResponse},
 };
@@ -21,7 +22,7 @@ pub struct PlaylistRequest {
     pub explicit_content: String,
     pub list_count: String,
     pub list_type: String,
-    pub list: Vec<SongRequest>,
+    pub list: Union<String, Vec<SongRequest>>,
     pub more_info: PlaylistRequestMoreInfo,
 }
 
