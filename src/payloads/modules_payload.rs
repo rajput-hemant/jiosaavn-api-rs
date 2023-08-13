@@ -21,16 +21,30 @@ use super::album_paylaod::album_payload;
 ///
 /// * `ModulesResponse` - Modules payload
 pub fn modules_payload(modules: ModulesRequest) -> ModulesResponse {
+    let artist_recos = modules.modules.artist_recos.unwrap_or_default();
+    let mixes = modules.modules.tag_mixes.unwrap_or_default();
+    let promo_107 = modules.modules.promo_107.unwrap_or_default();
+    let promo_112 = modules.modules.promo_112.unwrap_or_default();
+    let promo_113 = modules.modules.promo_113.unwrap_or_default();
+    let promo_114 = modules.modules.promo_114.unwrap_or_default();
+    let promo_116 = modules.modules.promo_116.unwrap_or_default();
+    let promo_118 = modules.modules.promo_118.unwrap_or_default();
+    let promo_176 = modules.modules.promo_176.unwrap_or_default();
+    let promo_185 = modules.modules.promo_185.unwrap_or_default();
+    let promo_49 = modules.modules.promo_49.unwrap_or_default();
+    let promo_68 = modules.modules.promo_68.unwrap_or_default();
+    let promo_76 = modules.modules.promo_76.unwrap_or_default();
+    let promo_90 = modules.modules.promo_90.unwrap_or_default();
+
     ModulesResponse {
         artist_recos: Module {
-            title: modules.modules.artist_recos.title,
-            subtitle: modules.modules.artist_recos.subtitle,
-            featured_text: modules.modules.artist_recos.featured_text,
-            data: modules
-                .artist_recos
-                .into_iter()
-                .map(artist_reco_payload)
-                .collect(),
+            title: artist_recos.title,
+            subtitle: artist_recos.subtitle,
+            featured_text: artist_recos.featured_text,
+            data: match modules.artist_recos {
+                Some(artist_recos) => artist_recos.into_iter().map(artist_reco_payload).collect(),
+                None => vec![],
+            },
         },
         discover: modules
             .browse_discover
@@ -81,14 +95,13 @@ pub fn modules_payload(modules: ModulesRequest) -> ModulesResponse {
                 .collect(),
         },
         mixes: Module {
-            title: modules.modules.tag_mixes.title,
-            subtitle: modules.modules.tag_mixes.subtitle,
-            featured_text: modules.modules.tag_mixes.featured_text,
-            data: modules
-                .tag_mixes
-                .into_iter()
-                .map(tag_mixes_payload)
-                .collect(),
+            title: mixes.title,
+            subtitle: mixes.subtitle,
+            featured_text: mixes.featured_text,
+            data: match modules.tag_mixes {
+                Some(mixes) => mixes.into_iter().map(tag_mixes_payload).collect(),
+                None => vec![],
+            },
         },
         radio: Module {
             title: modules.modules.radio.title,
@@ -97,75 +110,75 @@ pub fn modules_payload(modules: ModulesRequest) -> ModulesResponse {
             data: modules.radio.into_iter().map(radio_payload).collect(),
         },
         promo_107: Module {
-            title: modules.modules.promo_107.title,
-            subtitle: modules.modules.promo_107.subtitle,
-            featured_text: modules.modules.promo_107.featured_text,
+            title: promo_107.title,
+            subtitle: promo_107.subtitle,
+            featured_text: promo_107.featured_text,
             data: promo_payload(modules.promo_107),
         },
         promo_112: Module {
-            title: modules.modules.promo_112.title,
-            subtitle: modules.modules.promo_112.subtitle,
-            featured_text: modules.modules.promo_112.featured_text,
+            title: promo_112.title,
+            subtitle: promo_112.subtitle,
+            featured_text: promo_112.featured_text,
             data: promo_payload(modules.promo_112),
         },
         promo_113: Module {
-            title: modules.modules.promo_113.title,
-            subtitle: modules.modules.promo_113.subtitle,
-            featured_text: modules.modules.promo_113.featured_text,
+            title: promo_113.title,
+            subtitle: promo_113.subtitle,
+            featured_text: promo_113.featured_text,
             data: promo_payload(modules.promo_113),
         },
         promo_114: Module {
-            title: modules.modules.promo_114.title,
-            subtitle: modules.modules.promo_114.subtitle,
-            featured_text: modules.modules.promo_114.featured_text,
+            title: promo_114.title,
+            subtitle: promo_114.subtitle,
+            featured_text: promo_114.featured_text,
             data: promo_payload(modules.promo_114),
         },
         promo_116: Module {
-            title: modules.modules.promo_116.title,
-            subtitle: modules.modules.promo_116.subtitle,
-            featured_text: modules.modules.promo_116.featured_text,
+            title: promo_116.title,
+            subtitle: promo_116.subtitle,
+            featured_text: promo_116.featured_text,
             data: promo_payload(modules.promo_116),
         },
         promo_118: Module {
-            title: modules.modules.promo_118.title,
-            subtitle: modules.modules.promo_118.subtitle,
-            featured_text: modules.modules.promo_118.featured_text,
+            title: promo_118.title,
+            subtitle: promo_118.subtitle,
+            featured_text: promo_118.featured_text,
             data: promo_payload(modules.promo_118),
         },
         promo_176: Module {
-            title: modules.modules.promo_176.title,
-            subtitle: modules.modules.promo_176.subtitle,
-            featured_text: modules.modules.promo_176.featured_text,
+            title: promo_176.title,
+            subtitle: promo_176.subtitle,
+            featured_text: promo_176.featured_text,
             data: promo_payload(modules.promo_176),
         },
         promo_185: Module {
-            title: modules.modules.promo_185.title,
-            subtitle: modules.modules.promo_185.subtitle,
-            featured_text: modules.modules.promo_185.featured_text,
+            title: promo_185.title,
+            subtitle: promo_185.subtitle,
+            featured_text: promo_185.featured_text,
             data: promo_payload(modules.promo_185),
         },
         promo_49: Module {
-            title: modules.modules.promo_49.title,
-            subtitle: modules.modules.promo_49.subtitle,
-            featured_text: modules.modules.promo_49.featured_text,
+            title: promo_49.title,
+            subtitle: promo_49.subtitle,
+            featured_text: promo_49.featured_text,
             data: promo_payload(modules.promo_49),
         },
         promo_68: Module {
-            title: modules.modules.promo_68.title,
-            subtitle: modules.modules.promo_68.subtitle,
-            featured_text: modules.modules.promo_68.featured_text,
+            title: promo_68.title,
+            subtitle: promo_68.subtitle,
+            featured_text: promo_68.featured_text,
             data: promo_payload(modules.promo_68),
         },
         promo_76: Module {
-            title: modules.modules.promo_76.title,
-            subtitle: modules.modules.promo_76.subtitle,
-            featured_text: modules.modules.promo_76.featured_text,
+            title: promo_76.title,
+            subtitle: promo_76.subtitle,
+            featured_text: promo_76.featured_text,
             data: promo_payload(modules.promo_76),
         },
         promo_90: Module {
-            title: modules.modules.promo_90.title,
-            subtitle: modules.modules.promo_90.subtitle,
-            featured_text: modules.modules.promo_90.featured_text,
+            title: promo_90.title,
+            subtitle: promo_90.subtitle,
+            featured_text: promo_90.featured_text,
             data: promo_payload(modules.promo_90),
         },
     }
@@ -321,14 +334,15 @@ fn radio_payload(radio: RadioRequest) -> RadioResponse {
         image: create_image_links(radio.image),
         url: radio.perma_url,
         explicit: parse_type(radio.explicit_content),
-        description: radio.more_info.description,
+        description: radio.more_info.description.unwrap_or_default(),
         featured_station_type: radio.more_info.featured_station_type,
-        query: radio.more_info.query,
-        color: radio.more_info.color,
+        query: radio.more_info.query.unwrap_or_default(),
+        color: radio.more_info.color.unwrap_or_default(),
         language: radio.more_info.language,
         station_display_text: radio.more_info.station_display_text,
     }
 }
+
 fn promo_payload(promo: Option<Vec<PromoRequest>>) -> Vec<PromoResponse> {
     match promo {
         Some(promo) => promo.into_iter().map(promo_vec_payload).collect(),

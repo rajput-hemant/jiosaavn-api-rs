@@ -7,7 +7,7 @@ use super::{
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ModulesRequest {
-    pub artist_recos: Vec<ArtistRecoRequest>,
+    pub artist_recos: Option<Vec<ArtistRecoRequest>>,
     pub browse_discover: Vec<DiscoverRequest>,
     pub charts: Vec<ChartRequest>,
     pub city_mod: Option<Vec<CityModRequest>>,
@@ -15,7 +15,7 @@ pub struct ModulesRequest {
     pub new_albums: Vec<AlbumRequest>,
     pub new_trending: Vec<TrendingRequest>,
     pub top_playlists: Vec<ModulePlaylistRequest>,
-    pub tag_mixes: Vec<TagMixRequest>,
+    pub tag_mixes: Option<Vec<TagMixRequest>>,
     pub radio: Vec<RadioRequest>,
     pub modules: ModuleRequest,
     // pub top_shows: TopShowsRequest,
@@ -179,10 +179,10 @@ pub struct RadioRequest {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RadioRequestMoreInfo {
-    pub description: String,
+    pub description: Option<String>,
     pub featured_station_type: String,
-    pub query: String,
-    pub color: String,
+    pub query: Option<String>,
+    pub color: Option<String>,
     pub language: String,
     pub station_display_text: String,
 }
@@ -310,35 +310,35 @@ pub struct ModuleRequest {
     pub radio: ModuleItemRequest,
     pub charts: ModuleItemRequest,
     pub city_mod: Option<ModuleItemRequest>,
-    pub tag_mixes: ModuleItemRequest,
+    pub tag_mixes: Option<ModuleItemRequest>,
     pub new_albums: ModuleItemRequest,
     pub new_trending: ModuleItemRequest,
-    pub artist_recos: ModuleItemRequest,
+    pub artist_recos: Option<ModuleItemRequest>,
     pub top_playlists: ModuleItemRequest,
     #[serde(rename = "promo:vx:data:107")]
-    pub promo_107: ModuleItemRequest,
+    pub promo_107: Option<ModuleItemRequest>,
     #[serde(rename = "promo:vx:data:112")]
-    pub promo_112: ModuleItemRequest,
+    pub promo_112: Option<ModuleItemRequest>,
     #[serde(rename = "promo:vx:data:113")]
-    pub promo_113: ModuleItemRequest,
+    pub promo_113: Option<ModuleItemRequest>,
     #[serde(rename = "promo:vx:data:114")]
-    pub promo_114: ModuleItemRequest,
+    pub promo_114: Option<ModuleItemRequest>,
     #[serde(rename = "promo:vx:data:116")]
-    pub promo_116: ModuleItemRequest,
+    pub promo_116: Option<ModuleItemRequest>,
     #[serde(rename = "promo:vx:data:118")]
-    pub promo_118: ModuleItemRequest,
+    pub promo_118: Option<ModuleItemRequest>,
     #[serde(rename = "promo:vx:data:176")]
-    pub promo_176: ModuleItemRequest,
+    pub promo_176: Option<ModuleItemRequest>,
     #[serde(rename = "promo:vx:data:185")]
-    pub promo_185: ModuleItemRequest,
+    pub promo_185: Option<ModuleItemRequest>,
     #[serde(rename = "promo:vx:data:49")]
-    pub promo_49: ModuleItemRequest,
+    pub promo_49: Option<ModuleItemRequest>,
     #[serde(rename = "promo:vx:data:68")]
-    pub promo_68: ModuleItemRequest,
+    pub promo_68: Option<ModuleItemRequest>,
     #[serde(rename = "promo:vx:data:76")]
-    pub promo_76: ModuleItemRequest,
+    pub promo_76: Option<ModuleItemRequest>,
     #[serde(rename = "promo:vx:data:90")]
-    pub promo_90: ModuleItemRequest,
+    pub promo_90: Option<ModuleItemRequest>,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize)]
@@ -351,6 +351,7 @@ pub struct ModuleItemRequest {
 /*---------------------- Response ---------------------- */
 
 #[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Module<T> {
     pub title: String,
     pub subtitle: String,
