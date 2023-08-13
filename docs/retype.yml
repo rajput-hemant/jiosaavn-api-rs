@@ -1,0 +1,15 @@
+input: .
+output: ./dist
+url: rajput-hemant.github.io/jiosaavn-api-rs
+branding:
+  title: JioSaavn API
+  label: Docs
+links:
+  - text: API
+    link: https://jiosaavn.shuttleapp.rs
+  - text: Github
+    link: https://github.com/rajput-hemant/jiosaavn-api-rs
+  - text: Author
+    link: https://github.com/rajput-hemant
+footer:
+  copyright: "&copy; Copyright {{ year }}. All rights reserved."

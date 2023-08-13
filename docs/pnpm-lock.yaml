@@ -1,0 +1,17 @@
+lockfileVersion: '6.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+dependencies:
+  retypeapp:
+    specifier: ^3.1.0
+    version: 3.1.0
+
+packages:
+
+  /retypeapp@3.1.0:
+    resolution: {integrity: sha512-8qRO299gucLgcE46yp0ZzFZ5GXuydg141ApbdJYGYQpZBK7V3WS/ENnU3uDvDxlCnKbNxTj+0gR8quAKjsrg6Q==}
+    hasBin: true
+    dev: false

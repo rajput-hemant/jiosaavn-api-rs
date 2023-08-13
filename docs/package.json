@@ -1,0 +1,14 @@
+{
+	"name": "jiosaavn-api",
+	"version": "0.1.0",
+	"description": "An Unofficial Wrapper for JioSaavn API written in Rust programming language 🦀.",
+	"main": "index.js",
+	"scripts": {
+		"dev": "retype watch",
+		"build": "retype build",
+		"start": "retype start"
+	},
+	"dependencies": {
+		"retypeapp": "^3.1.0"
+	}
+}
