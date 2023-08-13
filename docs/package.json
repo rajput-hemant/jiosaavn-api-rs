@@ -4,9 +4,8 @@
 	"description": "An Unofficial Wrapper for JioSaavn API written in Rust programming language 🦀.",
 	"main": "index.js",
 	"scripts": {
-		"dev": "retype watch",
-		"build": "retype build",
-		"start": "retype start"
+		"dev": "retype start",
+		"build": "retype build"
 	},
 	"dependencies": {
 		"retypeapp": "^3.1.0"

@@ -1,6 +1,6 @@
 input: .
 output: ./dist
-url: rajput-hemant.github.io/jiosaavn-api-rs
+url: https://jiosaavn-api.netlify.app
 branding:
   title: JioSaavn API
   label: Docs
