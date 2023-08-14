@@ -7,6 +7,7 @@ mod utils;
 use axum::{
     error_handling::HandleErrorLayer,
     http::{Method, StatusCode},
+    response::Html,
     routing::get,
     BoxError, Router,
 };
@@ -99,6 +100,6 @@ async fn main() {
         .unwrap();
 }
 
-async fn root() -> &'static str {
-    "🚀 Welcome to Unofficial Jio Saavn API!"
+async fn root() -> Html<&'static str> {
+    Html(include_str!("../public/index.html"))
 }
