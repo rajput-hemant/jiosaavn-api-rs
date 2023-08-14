@@ -45,7 +45,7 @@ cargo run --release
 
 ## :cloud: Deploying your own instance
 
-==- Docker (**_Recommended_**)
+### Docker (**_Recommended_**)
 
 !!!warning Warning
 You need to have [Docker](https://docs.docker.com/get-docker/) installed on your system.
@@ -80,14 +80,18 @@ docker ps
 docker stop <container-id>
 ```
 
-=== [Render](https://render.com/)
+---
+
+### [Render](https://render.com/)
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
 
 - Login to your [Render](https://render.com/) account and create a new [:globe_with_meridians: Web Service](https://dashboard.render.com/select-repo?type=web).
 - Fill in the details, choose `Runtime` as `Rust` and click on **Create Web Service**.
 
-==- [Shuttle.rs](https://shuttle.rs/)
+---
+
+### [Shuttle.rs](https://shuttle.rs/)
 
 - Install the [Shuttle CLI](https://github.com/shuttle-hq/shuttle/releases)
 
@@ -130,7 +134,9 @@ cargo shuttle project start
 cargo shuttle deploy --allow-dirty
 ```
 
-==- [Fly.io](https://fly.io/)
+---
+
+### [Fly.io](https://fly.io/)
 
 - Install the [Fly CLI](https://fly.io/docs/hands-on/install-flyctl)
 
@@ -149,8 +155,6 @@ fly launch --name jiosaavn
 ```sh
 fly deploy
 ```
-
-===
 
 <div align=center>
 
