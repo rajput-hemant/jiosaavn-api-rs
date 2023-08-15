@@ -45,22 +45,27 @@ pub async fn album_details_handler(
         }
     };
 
+    if identifier.is_empty() {
+        return Json(CustomResponse::new(
+            StatusCode::Failed,
+            "❌ Album id or link is required!",
+            None,
+        ));
+    }
+
     let album_result = if fetch_by_id {
         get_album_details_by_id(&identifier).await
     } else {
         get_album_details_by_link(&identifier).await
     };
 
-    let status = if album_result.is_ok() {
-        StatusCode::Success
+    let (status, message) = if album_result.is_ok() {
+        (
+            StatusCode::Success,
+            "✅ Album details fetched successfully!",
+        )
     } else {
-        StatusCode::Failed
-    };
-
-    let message = if album_result.is_ok() {
-        "✅ Successfully fetched album details"
-    } else {
-        "❌ Failed to fetch album details"
+        (StatusCode::Failed, "❌ Failed to fetch album details!")
     };
 
     Json(CustomResponse::new(status, message, album_result.ok()))

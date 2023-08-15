@@ -11,7 +11,7 @@ use crate::{
 
 #[derive(Debug, Deserialize)]
 pub struct Params {
-    id: String,
+    id: Option<String>,
 }
 
 /// Handler for `/lyrics` route
@@ -24,19 +24,30 @@ pub struct Params {
 ///
 /// * `Json<CustomResponse<Lyrics>>` - Json response
 pub async fn lyrics_handler(Query(params): Query<Params>) -> Json<CustomResponse<Lyrics>> {
-    let lyrics = get_lyrics(&params.id).await;
+    match params.id {
+        Some(id) => {
+            if id.is_empty() {
+                return Json(CustomResponse::new(
+                    StatusCode::Failed,
+                    "❌ Song id is required!",
+                    None,
+                ));
+            }
 
-    let status = if lyrics.is_ok() {
-        StatusCode::Success
-    } else {
-        StatusCode::Failed
-    };
+            let lyrics = get_lyrics(&id).await;
 
-    let message = if lyrics.is_ok() {
-        "✅ Lyrics fetched successfully!"
-    } else {
-        "❌ Failed to fetch lyrics!"
-    };
+            let (status, message) = if lyrics.is_ok() {
+                (StatusCode::Success, "✅ Lyrics fetched successfully!")
+            } else {
+                (StatusCode::Failed, "❌ Failed to fetch lyrics")
+            };
 
-    Json(CustomResponse::new(status, message, lyrics.ok()))
+            Json(CustomResponse::new(status, message, lyrics.ok()))
+        }
+        None => Json(CustomResponse::new(
+            StatusCode::Failed,
+            "❌ Song id is required!",
+            None,
+        )),
+    }
 }

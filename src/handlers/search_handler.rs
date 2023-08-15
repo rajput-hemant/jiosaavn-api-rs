@@ -99,6 +99,14 @@ pub async fn songs_search_handler(
 ) -> Json<CustomResponse<TSearchResponse<SongResponse>>> {
     match params.query {
         Some(query) => {
+            if query.is_empty() {
+                return Json(CustomResponse::new(
+                    StatusCode::Failed,
+                    "❌ Query is required!",
+                    None,
+                ));
+            }
+
             let (page, limit) = get_default_params(params.page, params.limit);
 
             let result = search_songs(&query, page, limit).await;
@@ -140,6 +148,14 @@ pub async fn albums_search_handler(
 ) -> Json<CustomResponse<TSearchResponse<AlbumResponse>>> {
     match params.query {
         Some(query) => {
+            if query.is_empty() {
+                return Json(CustomResponse::new(
+                    StatusCode::Failed,
+                    "❌ Query is required!",
+                    None,
+                ));
+            }
+
             let (page, limit) = get_default_params(params.page, params.limit);
 
             let result = search_albums(&query, page, limit).await;
@@ -181,6 +197,14 @@ pub async fn playlists_search_handler(
 ) -> Json<CustomResponse<TSearchResponse<SearchPlaylistResponse>>> {
     match params.query {
         Some(query) => {
+            if query.is_empty() {
+                return Json(CustomResponse::new(
+                    StatusCode::Failed,
+                    "❌ Query is required!",
+                    None,
+                ));
+            }
+
             let (page, limit) = get_default_params(params.page, params.limit);
 
             let result = search_playlists(&query, page, limit).await;
@@ -222,6 +246,14 @@ pub async fn artists_search_handler(
 ) -> Json<CustomResponse<TSearchResponse<SearchArtistResponse>>> {
     match params.query {
         Some(query) => {
+            if query.is_empty() {
+                return Json(CustomResponse::new(
+                    StatusCode::Failed,
+                    "❌ Query is required!",
+                    None,
+                ));
+            }
+
             let (page, limit) = get_default_params(params.page, params.limit);
 
             let result = search_artists(&query, page, limit).await;

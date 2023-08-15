@@ -45,22 +45,24 @@ pub async fn song_details_handler(
         }
     };
 
+    if identifier.is_empty() {
+        return Json(CustomResponse::new(
+            StatusCode::Failed,
+            "❌ Song id or link is required!",
+            None,
+        ));
+    }
+
     let song_result = if fetch_by_id {
         get_song_details_by_id(&identifier).await
     } else {
         get_song_details_by_link(&identifier).await
     };
 
-    let status = if song_result.is_ok() {
-        StatusCode::Success
+    let (status, message) = if song_result.is_ok() {
+        (StatusCode::Success, "✅ Song details fetched successfully!")
     } else {
-        StatusCode::Failed
-    };
-
-    let message = if song_result.is_ok() {
-        "✅ Song details fetched successfully!"
-    } else {
-        "❌ Failed to fetch song details!"
+        (StatusCode::Failed, "❌ Failed to fetch song details!")
     };
 
     Json(CustomResponse::new(status, message, song_result.ok()))

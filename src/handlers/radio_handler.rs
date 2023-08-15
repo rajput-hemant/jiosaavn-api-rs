@@ -38,6 +38,16 @@ pub async fn create_radio_handler(Query(params): Query<Params>) -> Json<CustomRe
 
     match (name, station_type) {
         (Some(name), Some(station_type)) => {
+            if name.is_empty() {
+                return Json(CustomResponse {
+                    status: StatusCode::Failed,
+                    message: "❌ Radio name is required",
+                    data: None,
+                });
+            }
+
+            // TODO: validate station type
+
             let result = create_radio(
                 name.split(",").collect(),
                 &language.unwrap_or("hindi,english".to_string()),
@@ -84,6 +94,14 @@ pub async fn radio_songs_handler(
 
     match id {
         Some(id) => {
+            if id.is_empty() {
+                return Json(CustomResponse {
+                    status: StatusCode::Failed,
+                    message: "❌ Station id is required",
+                    data: None,
+                });
+            }
+
             let result = get_radio_songs(&id, count.unwrap_or(10), next.unwrap_or(0)).await;
 
             match result {

@@ -36,6 +36,14 @@ pub async fn playlist_details_handler(
         }
     };
 
+    if id.is_empty() {
+        return Json(CustomResponse::new(
+            StatusCode::Failed,
+            "❌ Playlist id is required!",
+            None,
+        ));
+    }
+
     let playlist_result = get_playlist_details_by_id(&id).await;
 
     Json(CustomResponse {
