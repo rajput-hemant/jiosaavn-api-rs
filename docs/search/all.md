@@ -373,6 +373,6 @@ curl -X GET 'https://jiosaavn.shuttleapp.rs/search/all?query=ram+siya+ram' \
 
 +++
 
-| **Query Paramter**                       | **Description** | **Required**                           |
+| **Query Parameter**                      | **Description** | **Required**                           |
 | ---------------------------------------- | --------------- | -------------------------------------- |
 | [!badge variant="contrast" text="query"] | Search query    | [!badge variant="primary" text="True"] |

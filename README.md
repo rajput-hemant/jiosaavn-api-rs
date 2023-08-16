@@ -102,7 +102,6 @@ cargo install cargo-shuttle
 async fn axum() -> shuttle_axum::ShuttleAxum {
     // tracing_subscriber::fmt::init();
 
-    let router = Router::new()
     ...
 
     // let addr = "[::]:8080".parse().unwrap();

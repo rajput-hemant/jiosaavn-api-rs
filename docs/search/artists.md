@@ -164,7 +164,7 @@ curl -X GET 'https://jiosaavn.shuttleapp.rs/search/artists?query=sia' \
 
 +++
 
-| Query Paramter                           | Description             | Default | Required                                |
+| Query Parameter                          | Description             | Default | Required                                |
 | ---------------------------------------- | ----------------------- | ------- | --------------------------------------- |
 | [!badge variant="contrast" text="query"] | Search query            | -       | [!badge variant="primary" text="True"]  |
 | [!badge variant="contrast" text="page"]  | Current page            | 1       | [!badge variant="primary" text="False"] |

@@ -15,7 +15,7 @@ use crate::models::quality::{Quality, QualityObject};
 /// * `Quality` - An enum that holds the download link(s) with different qualities
 pub fn create_download_links(encrypted_media_url: String) -> Quality {
     let qualities = vec![
-        ("_21", "12kbps"),
+        ("_12", "12kbps"),
         ("_48", "48kbps"),
         ("_96", "96kbps"),
         ("_160", "160kbps"),

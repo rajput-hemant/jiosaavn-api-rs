@@ -9685,6 +9685,6 @@ curl -X GET 'https://jiosaavn.shuttleapp.rs/modules?language=hindi,english' \
 
 +++
 
-|           **Query** **Paramter**            |                                                                                                  **Description**                                                                                                  |              **Required**               |
+|           **Query** **Parameter**           |                                                                                                  **Description**                                                                                                  |              **Required**               |
 | :-----------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------: |
 | [!badge variant="contrast" text="language"] | one or more comma separated languages `hindi`, `english`, `punjabi`, `tamil`, `telugu`, `marathi`,`gujarati`, `bengali`, `kannada`, `bhojpuri`, `malayalam`, `urdu`, `haryanvi`, `rajasthani`, `odia`, `assamese` | [!badge variant="primary" text="False"] |
