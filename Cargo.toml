@@ -9,7 +9,7 @@ authors = ["Hemant Rajput <68769346+rajput-hemant@users.noreply.github.com>"]
 axum = "0.6.20"
 base64 = "0.21.2"
 dotenv = "0.15.0"
-openssl = "0.10.56"
+openssl = "0.10.57"
 reqwest = { version = "0.11.18", features = ["serde_json", "json"] }
 serde = { version = "1.0.181", features = ["derive"] }
 serde_json = "1.0.104"
