@@ -7,7 +7,7 @@ authors = ["Hemant Rajput <68769346+rajput-hemant@users.noreply.github.com>"]
 
 [dependencies]
 axum = "0.6.20"
-base64 = "0.21.2"
+base64 = "0.21.4"
 dotenv = "0.15.0"
 openssl = "0.10.56"
 reqwest = { version = "0.11.18", features = ["serde_json", "json"] }
