@@ -1,4 +1,9 @@
-<!DOCTYPE html>
+use crate::config::{DOCS_URL, SITE_URL};
+use axum::response::Html;
+
+pub fn home_service() -> Html<String> {
+    Html(format!(
+        r#"<!DOCTYPE html>
 <html>
 	<head>
 		<meta charset="utf-8" />
@@ -6,23 +11,23 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="icon" type="image/png" href="favicon.png" />
 		<meta name="title" content="JioSaavn " />
-		<meta name="description" content="JioSaavn API by rajput-hemant" />
+		<meta name="description" content="JioSaavn API by rajput-hemant@github" />
 		<meta property="og:type" content="website" />
-		<meta property="og:url" content="https://jiosaavn.shuttleapp.rs" />
+		<meta property="og:url" content="{SITE_URL}" />
 		<meta property="og:title" content="JioSaavn API" />
-		<meta property="og:description" content="JioSaavn API by rajput-hemant" />
+		<meta property="og:description" content="JioSaavn API by rajput-hemant@github" />
 		<meta property="twitter:card" content="summary_large_image" />
-		<meta property="twitter:url" content="https://jiosaavn.shuttleapp.rs" />
-		<meta property="twitter:title" content="JioSaavn API by rajput-hemant" />
+		<meta property="twitter:url" content="{SITE_URL}" />
+		<meta property="twitter:title" content="JioSaavn API by rajput-hemant@github" />
 		<meta
 			property="twitter:description"
-			content="JioSaavn API by rajput-hemant"
+			content="JioSaavn API by rajput-hemant@github"
 		/>
 		<script src="https://cdn.tailwindcss.com"></script>
 	</head>
 
 	<style>
-		.no-select {
+		.no-select {{
 			-webkit-tap-highlight-color: transparent;
 			-webkit-touch-callout: none;
 			-webkit-user-select: none;
@@ -30,13 +35,13 @@
 			-moz-user-select: none;
 			-ms-user-select: none;
 			user-select: none;
-		}
-		.no-select:focus {
+		}}
+		.no-select:focus {{
 			outline: none !important;
-		}
+		}}
 
 		/* https://github.com/rajput-hemant/react-template-vite/blob/master/src/styles/layout.css */
-		.layout {
+		.layout {{
 			background-image: radial-gradient(
 					hsla(0, 0%, 84%, 0.25) 1px,
 					transparent 0
@@ -46,35 +51,35 @@
 			background-position: 0 0, 25px 25px;
 			-webkit-animation: slide 2s linear infinite;
 			animation: slide 4s linear infinite;
-		}
+		}}
 
-		@keyframes slide {
-			100% {
+		@keyframes slide {{
+			100% {{
 				background-position: 50px 0, 125px 25px;
-			}
-		}
+			}}
+		}}
 
-		.cards:hover > .card::after {
+		.cards:hover > .card::after {{
 			opacity: 1;
-		}
+		}}
 
-		.card::before {
+		.card::before {{
 			background: radial-gradient(
 				800px circle at var(--mouse-x) var(--mouse-y),
 				rgba(255, 255, 255, 0.06),
 				transparent 40%
 			);
 			z-index: 3;
-		}
+		}}
 
-		.card::after {
+		.card::after {{
 			background: radial-gradient(
 				600px circle at var(--mouse-x) var(--mouse-y),
 				rgba(255, 255, 255, 0.4),
 				transparent 40%
 			);
 			z-index: 1;
-		}
+		}}
 	</style>
 
 	<body
@@ -100,7 +105,7 @@
 			</div>
 
 			<a
-				href="https://jiosaavn-api.netlify.app"
+				href="{DOCS_URL}"
 				target="_blank"
 				rel="noopener noreferrer"
 				class="card before: before:transition-opcacity after:transition-opcacity relative flex h-[180px] w-full lg:h-[225px] lg:w-[500px] flex-col rounded-xl bg-white/10 shadow-lg shadow-black transition-shadow duration-500 before:absolute before:left-0 before:top-0 before:h-full before:w-full before:rounded-xl before:opacity-0 before:duration-500 after:absolute after:left-0 after:top-0 after:h-full after:w-full after:rounded-xl after:opacity-0 after:duration-500 hover:shadow-2xl hover:shadow-black before:hover:opacity-100"
@@ -216,15 +221,18 @@
 	</body>
 
 	<script>
-		document.getElementsByClassName("cards")[0].onmousemove = (e) => {
-			for (const card of document.getElementsByClassName("card")) {
+		document.getElementsByClassName("cards")[0].onmousemove = (e) => {{
+			for (const card of document.getElementsByClassName("card")) {{
 				const rect = card.getBoundingClientRect(),
 					x = e.clientX - rect.left,
 					y = e.clientY - rect.top;
 
-				card.style.setProperty("--mouse-x", `${x}px`);
-				card.style.setProperty("--mouse-y", `${y}px`);
-			}
-		};
+				card.style.setProperty("--mouse-x", `${{x}}px`);
+				card.style.setProperty("--mouse-y", `${{y}}px`);
+			}}
+		}};
 	</script>
 </html>
+"#
+    ))
+}

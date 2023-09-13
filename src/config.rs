@@ -3,7 +3,7 @@
 /* Urls */
 pub const BASE_URL: &str = "https://www.jiosaavn.com/api.php";
 pub const DOCS_URL: &str = "https://docs-jiosaavn.netlify.app";
-pub const SITE_URL: &str = "https://jiosaavn-api-ts.vercel.app";
+pub const SITE_URL: &str = "https://jiosaavn-api-rs.vercel.app";
 
 /* Endpoints */
 

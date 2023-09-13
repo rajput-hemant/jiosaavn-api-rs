@@ -32,11 +32,36 @@ cargo build --release
 cargo run --release
 ```
 
+### Vercel Dev Server
+
+- Vercel CLI should be installed on your system. If not, then install it from [here](https://vercel.com/download).
+
+```sh
+vc dev
+```
+
 ---
 
 ## 🌐 Deploying your own instance
 
-### Build and Run the Docker Image (**_Recommended_**)
+### Vercel (**_Recommended_**)
+
+```sh
+vc
+```
+
+<div align=center>
+
+**OR**
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/rajput-hemant/jiosaavn-api-rs)
+
+</div>
+
+> [!NOTE]
+> To ensure that the API consistently respects the provided language, make sure to set the [Function region](https://vercel.com/docs/concepts/functions/serverless-functions/regions) within Vercel to `Mumbai, India (South) - bom1`.
+
+### Build and Run the Docker Image
 
 > [!WARNING]
 > You need to have [Docker](https://docs.docker.com/get-docker/) installed on your system.

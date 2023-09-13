@@ -1,13 +1,6 @@
-mod handlers;
-mod models;
-mod payloads;
-mod services;
-mod utils;
-
 use axum::{
     error_handling::HandleErrorLayer,
     http::{Method, StatusCode},
-    response::Html,
     routing::get,
     BoxError, Router,
 };
@@ -16,12 +9,13 @@ use std::{env, time::Duration};
 use tower::{buffer::BufferLayer, limit::RateLimitLayer, ServiceBuilder};
 use tower_http::cors::{Any, CorsLayer};
 
-use handlers::{
+use jiosaavn::handlers::{
     album_details_handler, albums_search_handler, artist_albums_handler, artist_details_handler,
-    artist_songs_handler, artists_search_handler, create_radio_handler, lyrics_handler,
-    modules_handler, playlist_details_handler, playlists_search_handler, radio_songs_handler,
-    recommend_albums_handler, recommend_artists_songs_handler, recommend_songs_handler,
-    search_all_handler, song_details_handler, songs_search_handler, top_searches_handler,
+    artist_songs_handler, artists_search_handler, create_radio_handler, home_handler,
+    lyrics_handler, modules_handler, playlist_details_handler, playlists_search_handler,
+    radio_songs_handler, recommend_albums_handler, recommend_artists_songs_handler,
+    recommend_songs_handler, search_all_handler, song_details_handler, songs_search_handler,
+    top_searches_handler,
 };
 
 #[tokio::main]
@@ -36,7 +30,7 @@ async fn main() {
         .unwrap_or(false);
 
     let mut router = Router::new()
-        .route("/", get(root))
+        .route("/", get(home_handler))
         // home modules / launch data
         .route("/modules", get(modules_handler))
         // song details route
@@ -98,8 +92,4 @@ async fn main() {
         .serve(router.into_make_service())
         .await
         .unwrap();
-}
-
-async fn root() -> Html<&'static str> {
-    Html(include_str!("../public/index.html"))
 }

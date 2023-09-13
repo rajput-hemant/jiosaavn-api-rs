@@ -1,6 +1,7 @@
 pub mod album_service;
 pub mod api_service;
 pub mod artist_service;
+pub mod home_service;
 pub mod lyrics_service;
 pub mod module_service;
 pub mod playlist_service;

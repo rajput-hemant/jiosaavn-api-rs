@@ -1,0 +1,41 @@
+{
+	"$schema": "https://openapi.vercel.sh/vercel.json",
+	"functions": { "api/**/*.rs": { "runtime": "vercel-rust@4.0.6" } },
+	"rewrites": [
+		{
+			"source": "/",
+			"destination": "/api/home.rs"
+		}
+	],
+	"headers": [
+		{
+			"source": "(.*)",
+			"headers": [
+				{
+					"key": "Access-Control-Allow-Origin",
+					"value": "*"
+				},
+				{
+					"key": "Access-Control-Allow-Headers",
+					"value": "*"
+				},
+				{
+					"key": "Access-Control-Allow-Methods",
+					"value": "GET, OPTIONS"
+				},
+				{
+					"key": "Cache-Control",
+					"value": "s-maxage=300, stale-while-revalidate"
+				},
+				{
+					"key": "Author",
+					"value": "rajput-hemant@github"
+				},
+				{
+					"key": "Github",
+					"value": "https://github.com/rajput-hemant/jiosaavn-api-rs"
+				}
+			]
+		}
+	]
+}
