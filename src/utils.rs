@@ -1,8 +1,9 @@
 use base64::{engine::general_purpose, Engine as _};
 use openssl::symm::{decrypt, Cipher};
+use serde::de::DeserializeOwned;
 use std::str::FromStr;
 
-use crate::models::quality::{Quality, QualityObject};
+use crate::models::misc::{Quality, QualityObject};
 
 /// A utility function for creating download links of different qualities
 ///
@@ -126,4 +127,20 @@ pub fn token_from_link(_type: &str, link: &str) -> String {
 /// * `T` - parsed type
 pub fn parse_type<T: FromStr + Default>(from: String) -> T {
     from.parse().unwrap_or_default()
+}
+
+/// A utility function for parsing string to boolean
+///
+/// ## Arguments
+///
+/// * `v` - string
+///
+/// ## Returns
+///
+/// * `bool` - A boolean value
+pub fn parse_bool(from: String) -> bool {
+    match from.as_str() {
+        "1" | "true" => true,
+        _ => false,
+    }
 }

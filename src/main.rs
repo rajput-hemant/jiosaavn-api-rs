@@ -12,10 +12,10 @@ use tower_http::cors::{Any, CorsLayer};
 use jiosaavn::handlers::{
     album_details_handler, albums_search_handler, artist_albums_handler, artist_details_handler,
     artist_songs_handler, artists_search_handler, create_radio_handler, home_handler,
-    lyrics_handler, modules_handler, playlist_details_handler, playlists_search_handler,
-    radio_songs_handler, recommend_albums_handler, recommend_artists_songs_handler,
-    recommend_songs_handler, search_all_handler, song_details_handler, songs_search_handler,
-    top_searches_handler,
+    lyrics_handler, modules_handler, not_found_handler, playlist_details_handler,
+    playlists_search_handler, radio_songs_handler, recommend_albums_handler,
+    recommend_artists_songs_handler, recommend_songs_handler, search_all_handler,
+    song_details_handler, songs_search_handler, top_searches_handler,
 };
 
 #[tokio::main]
@@ -62,6 +62,8 @@ async fn main() {
         .route("/radio/songs", get(radio_songs_handler))
         // lyrics route
         .route("/lyrics", get(lyrics_handler))
+        // 404 route
+        .fallback(not_found_handler)
         // cors layer
         .layer(
             CorsLayer::new()

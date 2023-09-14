@@ -5,6 +5,10 @@
 		{
 			"source": "/",
 			"destination": "/api/home.rs"
+		},
+		{
+			"source": "/modules",
+			"destination": "/api/modules.rs"
 		}
 	],
 	"headers": [

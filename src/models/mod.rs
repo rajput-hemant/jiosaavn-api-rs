@@ -1,10 +1,10 @@
 pub mod album;
 pub mod artist;
+pub mod get;
 pub mod lyrics;
 pub mod misc;
 pub mod modules;
 pub mod playlist;
-pub mod quality;
 pub mod radio;
 pub mod response;
 pub mod search;

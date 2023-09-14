@@ -1,13 +1,13 @@
+use crate::{models::modules::RModules, services::module_service::get_modules, utils::parse_bool};
 use axum::{extract::Query, Json};
+use serde::Deserialize;
 
-use crate::{
-    models::{
-        modules::ModulesResponse,
-        response::{CustomResponse, StatusCode},
-    },
-    services::module_service::get_modules,
-};
-
+#[derive(Debug, Deserialize)]
+pub struct Params {
+    lang: Option<String>,
+    raw: Option<String>,
+    camel: Option<String>,
+}
 /// Handler for `/modules` route
 ///
 /// ## Arguments
@@ -20,29 +20,12 @@ use crate::{
 ///
 /// ## Returns
 ///
-/// * `Json<CustomResponse<ModulesResponse>>` - Json response
+/// * `Json<RModules>` - Json response
 ///
-pub async fn modules_handler(
-    language: Option<Query<String>>,
-) -> Json<CustomResponse<ModulesResponse>> {
-    let modules = get_modules(
-        &language
-            .map(|lang| lang.0)
-            .unwrap_or_else(|| "hindi,english".to_string()),
-    )
-    .await;
+pub async fn modules_handler(Query(params): Query<Params>) -> Json<RModules> {
+    let languages = params.lang.unwrap_or_else(|| "hindi,english".to_string());
+    let raw = parse_bool(params.raw.unwrap_or_else(|| "false".to_string()));
+    let camel = parse_bool(params.camel.unwrap_or_else(|| "false".to_string()));
 
-    Json(CustomResponse::new(
-        if modules.is_ok() {
-            StatusCode::Success
-        } else {
-            StatusCode::Failed
-        },
-        if modules.is_ok() {
-            "✅ Successfully fetched home data"
-        } else {
-            "❌ Failed to fetch home data"
-        },
-        modules.ok(),
-    ))
+    Json(get_modules(languages, raw, camel).await)
 }

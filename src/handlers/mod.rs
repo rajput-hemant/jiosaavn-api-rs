@@ -3,6 +3,7 @@ pub mod artist_handler;
 pub mod home_handler;
 pub mod lyrics_handler;
 pub mod modules_handler;
+pub mod not_found_handler;
 pub mod playlist_handler;
 pub mod radio_handler;
 pub mod search_handler;
@@ -16,6 +17,7 @@ pub use artist_handler::{
 pub use home_handler::home_handler;
 pub use lyrics_handler::lyrics_handler;
 pub use modules_handler::modules_handler;
+pub use not_found_handler::not_found_handler;
 pub use playlist_handler::playlist_details_handler;
 pub use radio_handler::{create_radio_handler, radio_songs_handler};
 pub use search_handler::{

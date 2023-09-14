@@ -1,15 +1,18 @@
-use crate::{
-    models::modules::{
-        ArtistRecoRequest, ArtistRecoResponse, ChartRequest, ChartResponse, CityModRequest,
-        CityModRequestMultipleTune, CityModResponse, CityModResponseMultipleTune, DiscoverRequest,
-        DiscoverResonse, Module, ModulePlaylistRequest, ModulePlaylistResponse, ModulesRequest,
-        ModulesResponse, PromoRequest, PromoResponse, RadioRequest, RadioResponse, TagMixRequest,
-        TagMixResponse, TrendingRequest, TrendingResponse,
-    },
-    utils::{create_image_links, parse_explicit_content, parse_type},
+use super::{
+    album_paylaod::album_payload, chart_payload, radio_payload, song_payload, trending_payload,
 };
-
-use super::album_paylaod::album_payload;
+use crate::{
+    models::{
+        misc::Union,
+        modules::{
+            ArtistRecoRequest, ArtistRecoResponse, CityModRequest, CityModRequestMultipleTune,
+            CityModResponse, CityModResponseMultipleTune, DiscoverRequest, DiscoverResonse, Module,
+            ModulesPlaylistRequest, ModulesPlaylistResponse, ModulesRequest, ModulesResponse,
+            PromoRequest, PromoResponse, TagMixRequest, TagMixResponse,
+        },
+    },
+    utils::{create_image_links, parse_bool, parse_explicit_content, parse_type},
+};
 
 /// Create modules payload from modules request
 ///
@@ -21,166 +24,139 @@ use super::album_paylaod::album_payload;
 ///
 /// * `ModulesResponse` - Modules payload
 pub fn modules_payload(modules: ModulesRequest) -> ModulesResponse {
-    let artist_recos = modules.modules.artist_recos.unwrap_or_default();
-    let mixes = modules.modules.tag_mixes.unwrap_or_default();
-    let promo_107 = modules.modules.promo_107.unwrap_or_default();
-    let promo_112 = modules.modules.promo_112.unwrap_or_default();
-    let promo_113 = modules.modules.promo_113.unwrap_or_default();
-    let promo_114 = modules.modules.promo_114.unwrap_or_default();
-    let promo_116 = modules.modules.promo_116.unwrap_or_default();
-    let promo_118 = modules.modules.promo_118.unwrap_or_default();
-    let promo_176 = modules.modules.promo_176.unwrap_or_default();
-    let promo_185 = modules.modules.promo_185.unwrap_or_default();
-    let promo_49 = modules.modules.promo_49.unwrap_or_default();
-    let promo_68 = modules.modules.promo_68.unwrap_or_default();
-    let promo_76 = modules.modules.promo_76.unwrap_or_default();
-    let promo_90 = modules.modules.promo_90.unwrap_or_default();
+    let mods = modules.modules;
+    let artist_recos_mods = mods.artist_recos.unwrap_or_default();
+    let city_mod_mods = mods.city_mod.unwrap_or_default();
+    let mixes_mods = mods.tag_mixes.unwrap_or_default();
 
     ModulesResponse {
-        artist_recos: Module {
-            title: artist_recos.title,
-            subtitle: artist_recos.subtitle,
-            featured_text: artist_recos.featured_text,
-            data: match modules.artist_recos {
-                Some(artist_recos) => artist_recos.into_iter().map(artist_reco_payload).collect(),
-                None => vec![],
-            },
+        trending: Module {
+            title: mods.new_trending.title,
+            subtitle: mods.new_trending.subtitle,
+            position: mods.new_trending.position,
+            source: "/get/trending".to_string(),
+            featured_text: mods.new_trending.featured_text,
+            data: trending_payload(modules.new_trending),
         },
-        discover: modules
-            .browse_discover
-            .into_iter()
-            .map(discover_payload)
-            .collect(),
 
         charts: Module {
-            title: modules.modules.charts.title,
-            subtitle: modules.modules.charts.subtitle,
-            featured_text: modules.modules.charts.featured_text,
+            title: mods.charts.title,
+            subtitle: mods.charts.subtitle,
+            position: mods.charts.position,
+            source: "/get/charts".to_string(),
+            featured_text: mods.charts.featured_text,
             data: modules.charts.into_iter().map(chart_payload).collect(),
         },
-        city_mod: modules.city_mod.map(|city_mod| {
-            let more_info = modules.modules.city_mod.unwrap_or_default();
-            Module {
-                title: more_info.title,
-                subtitle: more_info.subtitle,
-                featured_text: more_info.featured_text,
-                data: city_mod.into_iter().map(city_mod_payload).collect(),
-            }
-        }),
-        global_config: modules.global_config,
+
         albums: Module {
-            title: modules.modules.new_albums.title,
-            subtitle: modules.modules.new_albums.subtitle,
-            featured_text: modules.modules.new_albums.featured_text,
-            data: modules.new_albums.into_iter().map(album_payload).collect(),
-        },
-        trending: Module {
-            title: modules.modules.new_trending.title,
-            subtitle: modules.modules.new_trending.subtitle,
-            featured_text: modules.modules.new_trending.featured_text,
+            title: mods.new_albums.title,
+            subtitle: mods.new_albums.subtitle,
+            position: mods.new_albums.position,
+            source: "/get/albums".to_string(),
+            featured_text: mods.new_albums.featured_text,
             data: modules
-                .new_trending
+                .new_albums
                 .into_iter()
-                .map(trending_payload)
+                .map(|i| match i {
+                    Union::A(a) => Union::A(album_payload(a)),
+                    Union::B(s) => Union::B(song_payload(s)),
+                })
                 .collect(),
         },
+
         playlists: Module {
-            title: modules.modules.top_playlists.title,
-            subtitle: modules.modules.top_playlists.subtitle,
-            featured_text: modules.modules.top_playlists.featured_text,
+            title: mods.top_playlists.title,
+            subtitle: mods.top_playlists.subtitle,
+            position: mods.top_playlists.position,
+            source: "/get/featured-playlists".to_string(),
+            featured_text: mods.top_playlists.featured_text,
             data: modules
                 .top_playlists
                 .into_iter()
                 .map(module_playlist_payload)
                 .collect(),
         },
+
+        radio: Module {
+            title: mods.radio.title,
+            subtitle: mods.radio.subtitle,
+            position: mods.radio.position,
+            source: "/get/featured-stations".to_string(),
+            featured_text: mods.radio.featured_text,
+            data: modules.radio.into_iter().map(radio_payload).collect(),
+        },
+
+        artist_recos: Module {
+            title: artist_recos_mods.title,
+            subtitle: artist_recos_mods.subtitle,
+            featured_text: artist_recos_mods.featured_text,
+            position: artist_recos_mods.position,
+            source: "artist_recos|artistRecos".to_string(),
+            data: match modules.artist_recos {
+                Some(artist_recos) => artist_recos.into_iter().map(artist_reco_payload).collect(),
+                None => vec![],
+            },
+        },
+
+        discover: Module {
+            title: "".to_string(),
+            subtitle: "".to_string(),
+            featured_text: Some("".to_string()),
+            position: 0,
+            source: "discover".to_string(),
+            data: modules
+                .browse_discover
+                .into_iter()
+                .map(discover_payload)
+                .collect(),
+        },
+
+        city_mod: Module {
+            title: city_mod_mods.title,
+            subtitle: city_mod_mods.subtitle,
+            position: city_mod_mods.position,
+            source: "city_mod|cityMod".to_string(),
+            featured_text: city_mod_mods.featured_text,
+            data: match modules.city_mod {
+                Some(city_mod) => city_mod.into_iter().map(city_mod_payload).collect(),
+                None => vec![],
+            },
+        },
+
         mixes: Module {
-            title: mixes.title,
-            subtitle: mixes.subtitle,
-            featured_text: mixes.featured_text,
+            title: mixes_mods.title,
+            subtitle: mixes_mods.subtitle,
+            featured_text: mixes_mods.featured_text,
+            position: mixes_mods.position,
+            source: "mixes".to_string(),
             data: match modules.tag_mixes {
                 Some(mixes) => mixes.into_iter().map(tag_mixes_payload).collect(),
                 None => vec![],
             },
         },
-        radio: Module {
-            title: modules.modules.radio.title,
-            subtitle: modules.modules.radio.subtitle,
-            featured_text: modules.modules.radio.featured_text,
-            data: modules.radio.into_iter().map(radio_payload).collect(),
-        },
-        promo_107: Module {
-            title: promo_107.title,
-            subtitle: promo_107.subtitle,
-            featured_text: promo_107.featured_text,
-            data: promo_payload(modules.promo_107),
-        },
-        promo_112: Module {
-            title: promo_112.title,
-            subtitle: promo_112.subtitle,
-            featured_text: promo_112.featured_text,
-            data: promo_payload(modules.promo_112),
-        },
-        promo_113: Module {
-            title: promo_113.title,
-            subtitle: promo_113.subtitle,
-            featured_text: promo_113.featured_text,
-            data: promo_payload(modules.promo_113),
-        },
-        promo_114: Module {
-            title: promo_114.title,
-            subtitle: promo_114.subtitle,
-            featured_text: promo_114.featured_text,
-            data: promo_payload(modules.promo_114),
-        },
-        promo_116: Module {
-            title: promo_116.title,
-            subtitle: promo_116.subtitle,
-            featured_text: promo_116.featured_text,
-            data: promo_payload(modules.promo_116),
-        },
-        promo_118: Module {
-            title: promo_118.title,
-            subtitle: promo_118.subtitle,
-            featured_text: promo_118.featured_text,
-            data: promo_payload(modules.promo_118),
-        },
-        promo_176: Module {
-            title: promo_176.title,
-            subtitle: promo_176.subtitle,
-            featured_text: promo_176.featured_text,
-            data: promo_payload(modules.promo_176),
-        },
-        promo_185: Module {
-            title: promo_185.title,
-            subtitle: promo_185.subtitle,
-            featured_text: promo_185.featured_text,
-            data: promo_payload(modules.promo_185),
-        },
-        promo_49: Module {
-            title: promo_49.title,
-            subtitle: promo_49.subtitle,
-            featured_text: promo_49.featured_text,
-            data: promo_payload(modules.promo_49),
-        },
-        promo_68: Module {
-            title: promo_68.title,
-            subtitle: promo_68.subtitle,
-            featured_text: promo_68.featured_text,
-            data: promo_payload(modules.promo_68),
-        },
-        promo_76: Module {
-            title: promo_76.title,
-            subtitle: promo_76.subtitle,
-            featured_text: promo_76.featured_text,
-            data: promo_payload(modules.promo_76),
-        },
-        promo_90: Module {
-            title: promo_90.title,
-            subtitle: promo_90.subtitle,
-            featured_text: promo_90.featured_text,
-            data: promo_payload(modules.promo_90),
-        },
+
+        promos: modules
+            .promos
+            .into_iter()
+            .filter(|(key, _)| key.contains("promo"))
+            .enumerate()
+            .map(|(i, (key, promo))| {
+                let module = mods.promos.get(&key).unwrap();
+                (
+                    format!("promo{}", i),
+                    Module {
+                        title: module.title.clone(),
+                        subtitle: module.subtitle.clone(),
+                        position: module.position,
+                        source: format!("promo{}", i),
+                        featured_text: module.featured_text.clone(),
+                        data: promo_payload(promo),
+                    },
+                )
+            })
+            .collect(),
+
+        global_config: modules.global_config,
     }
 }
 
@@ -209,28 +185,11 @@ fn discover_payload(discover: DiscoverRequest) -> DiscoverResonse {
         subtitle: discover.subtitle,
         explicit: parse_explicit_content(discover.explicit_content),
         badge: discover.more_info.badge,
+        tags: discover.more_info.tags,
         is_featured: parse_type(discover.more_info.is_featured),
         sub_type: discover.more_info.sub_type,
         video_thumbnail: discover.more_info.video_thumbnail,
         video_url: discover.more_info.video_url,
-    }
-}
-
-fn chart_payload(chart: ChartRequest) -> ChartResponse {
-    let more_info = chart.more_info.unwrap_or_default();
-    ChartResponse {
-        id: chart.id,
-        image: create_image_links(chart.image),
-        name: chart.title,
-        type_field: chart.type_field,
-        url: chart.perma_url,
-        subtitle: chart.subtitle,
-        explicit: chart.explicit_content.map(parse_explicit_content),
-        count: chart.count,
-        listname: chart.listname,
-        language: chart.language,
-        firstname: more_info.firstname,
-        song_count: more_info.song_count,
     }
 }
 
@@ -266,45 +225,6 @@ fn city_mod_multiple_tunes_payload(
     }
 }
 
-fn trending_payload(trending: TrendingRequest) -> TrendingResponse {
-    TrendingResponse {
-        id: trending.id,
-        name: trending.title,
-        subtitle: trending.subtitle,
-        field: trending.type_field,
-        url: trending.perma_url,
-        image: create_image_links(trending.image),
-        language: trending.language,
-        year: parse_type(trending.year),
-        play_count: parse_type(trending.play_count),
-        explicit: parse_type(trending.explicit_content),
-        list_count: parse_type(trending.list_count),
-        list_type: trending.list_type,
-        list: trending.list,
-    }
-}
-
-fn module_playlist_payload(playlist: ModulePlaylistRequest) -> ModulePlaylistResponse {
-    ModulePlaylistResponse {
-        id: playlist.id,
-        name: playlist.title,
-        subtitle: playlist.subtitle,
-        type_field: playlist.type_field,
-        image: create_image_links(playlist.image),
-        url: playlist.perma_url,
-        explicit: parse_type(playlist.explicit_content),
-        song_count: parse_type(playlist.more_info.song_count),
-        follower_count: playlist
-            .more_info
-            .follower_count
-            .parse()
-            .unwrap_or_default(),
-        last_updated: parse_type(playlist.more_info.last_updated),
-        firstname: playlist.more_info.firstname,
-        user_id: playlist.more_info.uid,
-    }
-}
-
 fn tag_mixes_payload(mixes: TagMixRequest) -> TagMixResponse {
     TagMixResponse {
         id: mixes.id,
@@ -325,49 +245,45 @@ fn tag_mixes_payload(mixes: TagMixRequest) -> TagMixResponse {
     }
 }
 
-fn radio_payload(radio: RadioRequest) -> RadioResponse {
-    RadioResponse {
-        id: radio.id,
-        name: radio.title,
-        subtitle: radio.subtitle,
-        type_field: radio.type_field,
-        image: create_image_links(radio.image),
-        url: radio.perma_url,
-        explicit: parse_type(radio.explicit_content),
-        description: radio.more_info.description.unwrap_or_default(),
-        featured_station_type: radio.more_info.featured_station_type,
-        query: radio.more_info.query.unwrap_or_default(),
-        color: radio.more_info.color.unwrap_or_default(),
-        language: radio.more_info.language,
-        station_display_text: radio.more_info.station_display_text,
+fn module_playlist_payload(playlist: ModulesPlaylistRequest) -> ModulesPlaylistResponse {
+    let more_info = playlist.more_info;
+    ModulesPlaylistResponse {
+        id: playlist.id,
+        name: playlist.title,
+        subtitle: playlist.subtitle,
+        type_field: playlist.type_field,
+        image: create_image_links(playlist.image),
+        url: playlist.perma_url,
+        explicit: parse_bool(playlist.explicit_content),
+        user_id: more_info.uid,
+        song_count: parse_type(more_info.song_count),
+        firstname: more_info.firstname,
+        follower_count: parse_type(more_info.follower_count),
+        last_updated: more_info.last_updated,
     }
 }
 
-fn promo_payload(promo: Option<Vec<PromoRequest>>) -> Vec<PromoResponse> {
-    match promo {
-        Some(promo) => promo.into_iter().map(promo_vec_payload).collect(),
-        None => vec![],
-    }
-}
-
-fn promo_vec_payload(promo: PromoRequest) -> PromoResponse {
-    PromoResponse {
-        id: promo.id,
-        image: create_image_links(promo.image),
-        url: promo.perma_url,
-        subtitle: promo.subtitle,
-        name: promo.title,
-        type_field: promo.type_field,
-        language: promo.language,
-        list: promo.list,
-        list_count: promo.list_count.map(parse_type),
-        list_type: promo.list_type,
-        play_count: promo.play_count.map(parse_type),
-        year: promo.year.map(parse_type),
-        explicit: parse_type(promo.explicit_content),
-        square_image: promo.more_info.square_image,
-        editorial_language: promo.more_info.editorial_language,
-        position: promo.more_info.position.map(parse_type),
-        release_year: promo.more_info.release_year,
-    }
+fn promo_payload(promo: Vec<PromoRequest>) -> Vec<PromoResponse> {
+    promo
+        .into_iter()
+        .map(|promo| PromoResponse {
+            id: promo.id,
+            image: create_image_links(promo.image),
+            url: promo.perma_url,
+            subtitle: promo.subtitle,
+            name: promo.title,
+            type_field: promo.type_field,
+            language: promo.language,
+            list: promo.list,
+            list_count: promo.list_count.map(parse_type),
+            list_type: promo.list_type,
+            play_count: promo.play_count.map(parse_type),
+            year: promo.year.map(parse_type),
+            explicit: parse_type(promo.explicit_content),
+            square_image: promo.more_info.square_image,
+            editorial_language: promo.more_info.editorial_language,
+            position: promo.more_info.position.map(parse_type),
+            release_year: promo.more_info.release_year,
+        })
+        .collect()
 }
