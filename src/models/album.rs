@@ -1,9 +1,11 @@
 use super::{
     artist::{ArtistMapRequest, ArtistMapResponse},
     misc::{Quality, Union},
+    response::CResponse,
     song::{SongRequest, SongResponse},
 };
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct AlbumRequest {
@@ -23,7 +25,6 @@ pub struct AlbumRequest {
     pub list_type: String,
     pub list: Option<Union<String, Vec<SongRequest>>>,
     pub more_info: AlbumRequestMoreInfo,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub modules: Option<AlbumModulesRequest>,
 }
 
@@ -101,6 +102,9 @@ pub struct AlbumYearLangParamsRequest {
 
 /*---------------------- Response ---------------------- */
 
+pub type RAlbum = Union<Value, CResponse<AlbumResponse>>;
+pub type RAlbumVec = Union<Value, CResponse<Vec<AlbumResponse>>>;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct AlbumResponse {
     pub id: String,
@@ -117,12 +121,18 @@ pub struct AlbumResponse {
     pub list_type: String,
     pub url: String,
     pub image: Quality,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "artistMap")]
     pub artist_map: Option<ArtistMapResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub song_count: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub label_url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub copyright_text: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub is_dolby_content: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub songs: Option<Vec<SongResponse>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub modules: Option<AlbumModulesResponse>,

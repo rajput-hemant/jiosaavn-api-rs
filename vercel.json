@@ -5,7 +5,10 @@
 		{ "source": "/", "destination": "/api/home.rs" },
 		{ "source": "/modules", "destination": "/api/modules.rs" },
 		{ "source": "/song", "destination": "/api/song/details.rs" },
-		{ "source": "/song/recommend", "destination": "/api/song/recommend.rs" }
+		{ "source": "/song/recommend", "destination": "/api/song/recommend.rs" },
+		{ "source": "/album", "destination": "/api/album/details.rs" },
+		{ "source": "/album/recommend", "destination": "/api/album/recommend.rs" },
+		{ "source": "/album/same-year", "destination": "/api/album/same_year.rs" }
 	],
 	"headers": [
 		{

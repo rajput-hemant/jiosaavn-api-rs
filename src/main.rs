@@ -10,12 +10,12 @@ use tower::{buffer::BufferLayer, limit::RateLimitLayer, ServiceBuilder};
 use tower_http::cors::{Any, CorsLayer};
 
 use jiosaavn::handlers::{
-    album_details_handler, albums_search_handler, artist_albums_handler, artist_details_handler,
-    artist_songs_handler, artists_search_handler, create_radio_handler, home_handler,
-    lyrics_handler, modules_handler, not_found_handler, playlist_details_handler,
-    playlists_search_handler, radio_songs_handler, recommend_albums_handler,
-    recommend_artists_songs_handler, recommend_songs_handler, search_all_handler,
-    song_details_handler, songs_search_handler, top_searches_handler,
+    album_details_handler, albums_from_same_year_handler, albums_search_handler,
+    artist_albums_handler, artist_details_handler, artist_songs_handler, artists_search_handler,
+    create_radio_handler, home_handler, lyrics_handler, modules_handler, not_found_handler,
+    playlist_details_handler, playlists_search_handler, radio_songs_handler,
+    recommend_albums_handler, recommend_artists_songs_handler, recommend_songs_handler,
+    search_all_handler, song_details_handler, songs_search_handler, top_searches_handler,
 };
 
 #[tokio::main]
@@ -39,6 +39,7 @@ async fn main() {
         // album details route
         .route("/album", get(album_details_handler))
         .route("/album/recommend", get(recommend_albums_handler))
+        .route("/album/same-year", get(albums_from_same_year_handler))
         // playlist details route
         .route("/playlist", get(playlist_details_handler))
         // artist details route

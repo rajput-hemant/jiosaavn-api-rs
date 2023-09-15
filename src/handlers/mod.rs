@@ -9,7 +9,9 @@ pub mod radio_handler;
 pub mod search_handler;
 pub mod song_handler;
 
-pub use album_handler::{album_details_handler, recommend_albums_handler};
+pub use album_handler::{
+    album_details_handler, albums_from_same_year_handler, recommend_albums_handler, AlbumParams,
+};
 pub use artist_handler::{
     artist_albums_handler, artist_details_handler, artist_songs_handler,
     recommend_artists_songs_handler,

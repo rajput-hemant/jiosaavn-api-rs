@@ -40,3 +40,15 @@ path = "api/song/details.rs"
 [[bin]]
 name = "song_reco"
 path = "api/song/recommend.rs"
+
+[[bin]]
+name = "album_details"
+path = "api/album/details.rs"
+
+[[bin]]
+name = "album_reco"
+path = "api/album/recommend.rs"
+
+[[bin]]
+name = "album_same_year"
+path = "api/album/same_year.rs"
