@@ -1,8 +1,10 @@
 use super::{
     artist::{ArtistMapRequest, ArtistMapResponse},
     misc::{Quality, Rights, Union},
+    response::CResponse,
 };
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SongObjRequest {
@@ -33,7 +35,6 @@ pub struct SongRequest {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SongRequestMoreInfo {
     pub music: String,
-    pub song: Option<String>,
     pub album_id: String,
     pub album: String,
     pub label: String,
@@ -55,8 +56,8 @@ pub struct SongRequestMoreInfo {
     #[serde(rename = "artistMap")]
     pub artist_map: ArtistMapRequest,
     pub release_date: Option<String>,
-    pub vcode: String,
-    pub vlink: String,
+    pub vcode: Option<String>,
+    pub vlink: Option<String>,
     pub triller_available: bool,
     pub webp: String,
     pub lyrics_id: Option<String>,
@@ -68,9 +69,9 @@ pub struct SongModulesRequest {
     #[serde(rename = "currentlyTrending")]
     pub currently_trending: SongModulesCurrentlyTrendingRequest,
     #[serde(rename = "songsBysameArtists")]
-    pub songs_by_same_actors: SongModulesSongsBySameActorsRequest,
-    #[serde(rename = "songsBysameActors")]
     pub songs_by_same_artists: SongModulesSongsBySameArtistsRequest,
+    #[serde(rename = "songsBysameActors")]
+    pub songs_by_same_actors: SongModulesSongsBySameActorsRequest,
     pub artists: SongModulesArtistsRequest,
 }
 
@@ -145,6 +146,8 @@ pub struct SongModulesActorSongParamsRequest {
 }
 
 /*---------------------- Response ---------------------- */
+pub type RSong = Union<Value, CResponse<SongObjResponse>>;
+pub type RSongReco = Union<Value, CResponse<Vec<SongResponse>>>;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SongObjResponse {
@@ -170,7 +173,6 @@ pub struct SongResponse {
     pub list_type: String,
     pub list: String,
     pub music: String,
-    pub song: Option<String>,
     pub album: String,
     pub album_id: String,
     pub album_url: String,
@@ -191,8 +193,8 @@ pub struct SongResponse {
     #[serde(rename = "artistMap")]
     pub artist_map: ArtistMapResponse,
     pub release_date: Option<String>,
-    pub vcode: String,
-    pub vlink: String,
+    pub vcode: Option<String>,
+    pub vlink: Option<String>,
     pub triller_available: bool,
 }
 

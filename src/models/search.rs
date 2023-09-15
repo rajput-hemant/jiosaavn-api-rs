@@ -1,6 +1,5 @@
+use super::misc::Quality;
 use serde::{Deserialize, Serialize};
-
-use super::quality::Quality;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SearchRequest<T> {

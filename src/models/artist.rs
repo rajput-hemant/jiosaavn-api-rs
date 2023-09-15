@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{
     album::{AlbumRequest, AlbumResponse},
-    quality::Quality,
+    misc::Quality,
     song::{SongRequest, SongResponse},
 };
 
@@ -136,7 +136,7 @@ pub struct ArtistTopAlbums<T> {
 
 /*---------------------- Response ---------------------- */
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ArtistResponse {
     pub id: String,

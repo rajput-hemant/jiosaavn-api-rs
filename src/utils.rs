@@ -83,6 +83,15 @@ pub fn create_image_links(link: String) -> Quality {
     Quality::List(image_links)
 }
 
+pub fn is_jio_saavn_link(url: String) -> bool {
+    let regex = regex::Regex::new(
+        r"^(https?:\/\/)?(www.)?jiosaavn\.com\/(song|shows|album|artist|featured)\/(.+)$",
+    )
+    .unwrap();
+
+    regex.is_match(&url)
+}
+
 /// A utility function for parsing explicit content string to boolean
 ///
 /// ## Arguments
@@ -103,17 +112,13 @@ pub fn parse_explicit_content(v: String) -> bool {
 ///
 /// ## Arguments
 ///
-/// * `_type` - item type (song, album, artist)
-/// * `link` - link from the API
+/// * `link` - link from the `jiosaavn.com` domain
 ///
 /// ## Returns
 ///
 /// * `String` - extracted token
-pub fn token_from_link(_type: &str, link: &str) -> String {
-    link.split(&format!("{_type}/")).collect::<Vec<_>>()[1]
-        .split('/')
-        .collect::<Vec<_>>()[1]
-        .to_string()
+pub fn token_from_link(link: String) -> String {
+    link.split("/").last().unwrap().to_string()
 }
 
 /// A utility function for parsing string to a generic type
@@ -143,4 +148,45 @@ pub fn parse_bool(from: String) -> bool {
         "1" | "true" => true,
         _ => false,
     }
+}
+
+use serde_json::{Map, Value};
+
+pub fn to_camel_case<T: DeserializeOwned>(input: Value) -> T {
+    match input {
+        Value::Object(obj) => {
+            let mut new_obj = Map::new();
+            for (key, value) in obj {
+                let new_key = convert_key_to_camel_case(&key);
+                let new_value = to_camel_case(value);
+                new_obj.insert(new_key, new_value);
+            }
+            // Value::Object(new_obj)
+            serde_json::from_value(Value::Object(new_obj)).unwrap()
+        }
+        Value::Array(vec) => {
+            let new_vec: Vec<Value> = vec.into_iter().map(|v| to_camel_case(v)).collect();
+            // Value::Array(new_vec)
+            serde_json::from_value(Value::Array(new_vec)).unwrap()
+        }
+        other => serde_json::from_value(other).unwrap(),
+    }
+}
+
+fn convert_key_to_camel_case(key: &str) -> String {
+    let mut result = String::new();
+    let mut capitalize_next = false;
+
+    for c in key.chars() {
+        if c == '_' {
+            capitalize_next = true;
+        } else if capitalize_next {
+            result.push(c.to_ascii_uppercase());
+            capitalize_next = false;
+        } else {
+            result.push(c);
+        }
+    }
+
+    result
 }

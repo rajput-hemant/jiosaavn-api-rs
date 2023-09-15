@@ -59,7 +59,6 @@ pub fn song_payload(song: SongRequest) -> SongResponse {
         album: more_info.album,
         label: more_info.label,
         label_url: more_info.label_url,
-        song: more_info.song,
         origin: more_info.origin,
         is_dolby_content: more_info.is_dolby_content,
         _320kbps: parse_bool(more_info._320kbps),

@@ -12,6 +12,7 @@ axum = "0.6.20"
 base64 = "0.21.4"
 dotenv = "0.15.0"
 openssl = "0.10.57"
+regex = "1.9.5"
 reqwest = { version = "0.11.20", features = ["serde_json", "json"] }
 serde = { version = "1.0.188", features = ["derive"] }
 serde_json = "1.0.106"
@@ -31,3 +32,11 @@ path = "api/home.rs"
 [[bin]]
 name = "modules"
 path = "api/modules.rs"
+
+[[bin]]
+name = "song_details"
+path = "api/song/details.rs"
+
+[[bin]]
+name = "song_reco"
+path = "api/song/recommend.rs"

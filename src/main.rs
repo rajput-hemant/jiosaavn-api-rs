@@ -35,20 +35,17 @@ async fn main() {
         .route("/modules", get(modules_handler))
         // song details route
         .route("/song", get(song_details_handler))
-        .route("/song/recommendations", get(recommend_songs_handler))
+        .route("/song/recommend", get(recommend_songs_handler))
         // album details route
         .route("/album", get(album_details_handler))
-        .route("/album/recommendations", get(recommend_albums_handler))
+        .route("/album/recommend", get(recommend_albums_handler))
         // playlist details route
         .route("/playlist", get(playlist_details_handler))
         // artist details route
         .route("/artist", get(artist_details_handler))
         .route("/artist/songs", get(artist_songs_handler))
         .route("/artist/albums", get(artist_albums_handler))
-        .route(
-            "/artist/recommendations",
-            get(recommend_artists_songs_handler),
-        )
+        .route("/artist/recommend", get(recommend_artists_songs_handler))
         // search routes
         .route("/search", get(search_all_handler))
         .route("/search/all", get(search_all_handler))

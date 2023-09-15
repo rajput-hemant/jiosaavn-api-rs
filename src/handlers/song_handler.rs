@@ -1,71 +1,63 @@
+use crate::{
+    models::{
+        misc::Union,
+        response::{CResponse, Status},
+        song::{RSong, RSongReco},
+    },
+    services::song_service::{get_song_details, get_song_recommendations},
+    utils::{is_jio_saavn_link, parse_bool},
+};
 use axum::{extract::Query, Json};
 use serde::Deserialize;
 
-use crate::{
-    models::{
-        response::{CustomResponse, StatusCode},
-        song::SongResponse,
-    },
-    services::song_service::{
-        get_song_details_by_id, get_song_details_by_link, get_song_recommendations,
-    },
-};
-
 #[derive(Debug, Deserialize)]
-pub struct Params {
-    id: Option<String>,
-    link: Option<String>,
+pub struct SongParams {
+    pub id: Option<String>,
+    pub token: Option<String>,
+    pub link: Option<String>,
+    pub raw: Option<String>,
+    pub camel: Option<String>,
+    pub lang: Option<String>,
 }
 
 /// Handler for `/song` route
 ///
 /// ## Arguments
 ///
-/// * `id` - Query parameter for song id
-/// * `link` - Query parameter for song link
-///
-/// * In case both `id` and `link` are provided, `id` will be used
+/// * `id` - Query param for song(s) id(s)
+/// * `token` - Query param for song token
+/// * `link` - Query param for song link
 ///
 /// ## Returns
 ///
-/// * `Json<CustomResponse<Vec<SongResponse>>>` - Json response
-pub async fn song_details_handler(
-    Query(params): Query<Params>,
-) -> Json<CustomResponse<Vec<SongResponse>>> {
-    let (identifier, fetch_by_id) = match (params.id, params.link) {
-        (Some(id), None) => (id, true),
-        (None, Some(link)) => (link, false),
-        (Some(id), Some(_)) => (id, true),
-        (None, None) => {
-            return Json(CustomResponse::new(
-                StatusCode::Failed,
-                "❌ Song id or link is required!",
-                None,
-            ));
-        }
-    };
-
-    if identifier.is_empty() {
-        return Json(CustomResponse::new(
-            StatusCode::Failed,
-            "❌ Song id or link is required!",
+/// * `Json<RSong>` - Json response
+pub async fn song_details_handler(Query(params): Query<SongParams>) -> Json<RSong> {
+    match (params.id, params.token, params.link) {
+        (None, None, None) => Json(Union::B(CResponse::new(
+            Status::Failed,
+            "❌ Please provide song id(s) or token or a link",
             None,
-        ));
+        ))),
+
+        (_, _, Some(link)) if !is_jio_saavn_link(link.to_owned()) => {
+            Json(Union::B(CResponse::new(
+                Status::Failed,
+                "❌ Please provide a valid JioSaavn link",
+                None,
+            )))
+        }
+
+        (id, token, link) => Json(
+            get_song_details(
+                id.unwrap_or_default(),
+                token.unwrap_or_default(),
+                link.unwrap_or_default(),
+                parse_bool(params.raw.unwrap_or_else(|| "0".to_string())),
+                parse_bool(params.camel.unwrap_or_else(|| "0".to_string())),
+            )
+            .await,
+        ),
     }
-
-    let song_result = if fetch_by_id {
-        get_song_details_by_id(&identifier).await
-    } else {
-        get_song_details_by_link(&identifier).await
-    };
-
-    let (status, message) = if song_result.is_ok() {
-        (StatusCode::Success, "✅ Song details fetched successfully!")
-    } else {
-        (StatusCode::Failed, "❌ Failed to fetch song details!")
-    };
-
-    Json(CustomResponse::new(status, message, song_result.ok()))
 }
 
 /// Handler for `/song/recommendations` route
@@ -77,31 +69,21 @@ pub async fn song_details_handler(
 /// ## Returns
 ///
 /// * `Json<CustomResponse<Vec<SongResponse>>>` - Json response
-pub async fn recommend_songs_handler(
-    Query(params): Query<Params>,
-) -> Json<CustomResponse<Vec<SongResponse>>> {
-    match params.id {
-        Some(id) => {
-            let result = get_song_recommendations(&id).await;
-
-            let status = if result.is_ok() {
-                StatusCode::Success
-            } else {
-                StatusCode::Failed
-            };
-
-            let message = if result.is_ok() {
-                "✅ Successfully fetched song recommendations"
-            } else {
-                "❌ Failed to fetch song recommendations"
-            };
-
-            Json(CustomResponse::new(status, message, result.ok()))
-        }
-        None => Json(CustomResponse::new(
-            StatusCode::Failed,
-            "❌ Song id is required!",
+pub async fn recommend_songs_handler(Query(params): Query<SongParams>) -> Json<RSongReco> {
+    match (params.id, params.lang) {
+        (Some(id), lang) => Json(
+            get_song_recommendations(
+                id,
+                lang.unwrap_or_else(|| "hindi,english".to_string()),
+                parse_bool(params.raw.unwrap_or_else(|| "0".to_string())),
+                parse_bool(params.camel.unwrap_or_else(|| "0".to_string())),
+            )
+            .await,
+        ),
+        (None, _) => Json(Union::B(CResponse::new(
+            Status::Failed,
+            "❌ Please provide song id",
             None,
-        )),
+        ))),
     }
 }

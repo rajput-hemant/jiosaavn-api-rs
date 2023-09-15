@@ -51,7 +51,7 @@ pub async fn get_artist_details_by_link(link: &str) -> Result<ArtistResponse, re
         true,
         Some(
             vec![
-                ("token".to_string(), token_from_link("artist", link)),
+                ("token".to_string(), token_from_link(link.to_string())),
                 ("type".to_string(), "artist".to_string()),
             ]
             .into_iter()

@@ -49,7 +49,7 @@ pub async fn get_album_details_by_link(link: &str) -> Result<AlbumResponse, reqw
         true,
         Some(
             vec![
-                ("token".to_string(), token_from_link("album", link)),
+                ("token".to_string(), token_from_link(link.to_string())),
                 ("type".to_string(), "album".to_string()),
             ]
             .into_iter()

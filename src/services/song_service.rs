@@ -1,79 +1,84 @@
-use serde_json::{from_value, Value};
-
+use super::api_service::http;
 use crate::{
-    models::song::{SongRequest, SongResponse},
-    payloads::song_payload,
+    config::{RECOMMEND_SONGS, SONG_BY_ID, SONG_BY_LINK},
+    models::{
+        misc::Union,
+        response::{CResponse, Status},
+        song::{RSong, RSongReco, SongRequest},
+    },
+    payloads::song_payload::{song_obj_payload, song_payload},
     utils::token_from_link,
 };
+use serde_json::from_value;
 
-use super::api_service::http;
-
-/// Helper function to make request to `song.getDetails` endpoint of JioSaavn API to get song details
+/// Helper function to get song details by id, token or link
 ///
 /// ## Arguments
 ///
 /// * `ids` - Comma separated song ids
-///
-/// ## Returns
-///
-/// * `Result<Vec<SongResponse>, reqwest::Error>` - Result of song payload
-pub async fn get_song_details_by_id(ids: &str) -> Result<Vec<SongResponse>, reqwest::Error> {
-    let result: Value = http(
-        "song.getDetails",
-        true,
-        Some(
-            vec![("pids".to_string(), ids.to_string())]
-                .into_iter()
-                .collect(),
-        ),
-    )
-    .await?;
-
-    let songs = parse_song_value(result)
-        .into_iter()
-        .map(|song| song_payload(song))
-        .collect();
-
-    Ok(songs)
-}
-
-/// Helper function to make request to `webapi.get` endpoint of JioSaavn API to get song details
-///
-/// ## Arguments
-///
 /// * `link` - Song link
+/// * `token` - Song token
+/// * `raw` - Whether to return raw response or not
+/// * `camel` - Whether to convert response to camel case or not
 ///
 /// ## Returns
 ///
-/// * `Result<Vec<SongResponse>, reqwest::Error>` - Result of song payload
-///
-/// ## _Note_
-///
-/// * This function is not recommended to use as it is not stable
-pub async fn get_song_details_by_link(link: &str) -> Result<Vec<SongResponse>, reqwest::Error> {
-    let result: Value = http(
-        "webapi.get",
-        true,
-        Some(
-            vec![
-                ("token".to_string(), token_from_link("song", link)),
-                ("type".to_string(), "song".to_string()),
-            ]
-            .into_iter()
-            .collect(),
-        ),
-    )
-    .await?;
+/// * `RSong` - Result of song payload
+pub async fn get_song_details(
+    id: String,
+    token: String,
+    link: String,
+    raw: bool,
+    _: bool,
+) -> RSong {
+    let path = if id.is_empty() {
+        SONG_BY_LINK
+    } else {
+        SONG_BY_ID
+    };
 
-    let songs = parse_song_value(result)
-        .into_iter()
-        .map(|song| song_payload(song))
-        .collect();
+    let query = vec![
+        ("pids".to_string(), id),
+        if token.is_empty() {
+            ("token".to_string(), token_from_link(link))
+        } else {
+            ("token".to_string(), token)
+        },
+        ("type".to_string(), "song".to_string()),
+    ]
+    .into_iter()
+    .collect();
 
-    Ok(songs)
+    let response = http(path, true, Some(query)).await;
+
+    match response {
+        Ok(obj) => {
+            if raw {
+                Union::A(obj)
+            } else {
+                // TODO: Add camel case conversion
+
+                Union::B(CResponse::new(
+                    Status::Success,
+                    "✅ Song details fetched successfully",
+                    Some(song_obj_payload(from_value(obj).unwrap())),
+                ))
+            }
+        }
+
+        Err(e) => {
+            println!("Error: {e}");
+
+            Union::B(CResponse::new(
+                Status::Failed,
+                "❌ Song not found, please check the id, token or link",
+                None,
+            ))
+        }
+    }
 }
 
-/// Helper function to make request to `reco.getreco` endpoint of JioSaavn API to get song recommendations
+/// Helper function to get song recommendations by id
 ///
 /// ## Arguments
 ///
@@ -82,39 +87,48 @@ pub async fn get_song_details_by_link(link: &str) -> Result<Vec<SongResponse>, r
 /// ## Returns
 ///
 /// * `Result<Vec<SongResponse>, reqwest::Error>` - Result of song payload
-pub async fn get_song_recommendations(id: &str) -> Result<Vec<SongResponse>, reqwest::Error> {
-    let result: Vec<SongRequest> = http(
-        "reco.getreco",
+pub async fn get_song_recommendations(id: String, lang: String, raw: bool, _: bool) -> RSongReco {
+    let response = http(
+        RECOMMEND_SONGS,
         true,
         Some(
-            vec![("pid".to_string(), id.to_string())]
+            vec![("pid".to_string(), id), ("language".to_string(), lang)]
                 .into_iter()
                 .collect(),
         ),
     )
-    .await?;
+    .await;
 
-    let songs = result.into_iter().map(|song| song_payload(song)).collect();
+    match response {
+        Ok(songs) => {
+            if raw {
+                Union::A(songs)
+            } else {
+                // TODO: Add camel case conversion
 
-    Ok(songs)
-}
+                Union::B(CResponse::new(
+                    Status::Success,
+                    "✅ Song Recommendations fetched successfully",
+                    Some(
+                        from_value::<Vec<SongRequest>>(songs)
+                            .unwrap()
+                            .into_iter()
+                            .map(song_payload)
+                            .collect(),
+                    ),
+                ))
+            }
+        }
 
-/// Utility function to parse song from serde_json::Value
-///
-/// ## Arguments
-///
-/// * `serde_value` - serde_json::Value
-///
-/// ## Returns
-///
-/// * `Vec<SongRequest>` - Vector of SongRequest
-fn parse_song_value(serde_value: Value) -> Vec<SongRequest> {
-    match serde_value["songs"].as_array() {
-        Some(songs) => songs
-            .iter()
-            .map(|song| from_value(song.clone()).unwrap())
-            .collect(),
-        None => vec![],
+        Err(e) => {
+            println!("Error: {e}");
+
+            Union::B(CResponse::new(
+                Status::Failed,
+                "❌ No recommendations found, please check the id",
+                None,
+            ))
+        }
     }
 }
 
@@ -123,31 +137,104 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    async fn test_get_song_details_by_id() -> Result<(), reqwest::Error> {
-        let result = get_song_details_by_id("5WXAlMNt,9BjJPi0Y").await?;
+    async fn test_get_song_details_by_id() {
+        let result = get_song_details(
+            "5WXAlMNt,9BjJPi0Y".to_string(),
+            "".to_string(),
+            "".to_string(),
+            false,
+            false,
+        )
+        .await;
 
         dbg!("{:?}", result);
-
-        Ok(())
     }
 
     #[tokio::test]
-    async fn test_get_song_details_by_link() -> Result<(), reqwest::Error> {
+    async fn test_get_song_details_by_id_raw() {
+        let result = get_song_details(
+            "5WXAlMNt,9BjJPi0Y".to_string(),
+            "".to_string(),
+            "".to_string(),
+            true,
+            false,
+        )
+        .await;
+
+        dbg!("{:?}", result);
+    }
+
+    #[tokio::test]
+    async fn test_get_song_details_by_token() {
+        let result = get_song_details(
+            "".to_string(),
+            "OCQeXSxcXkE".to_string(),
+            "".to_string(),
+            false,
+            false,
+        )
+        .await;
+
+        dbg!("{:?}", result);
+    }
+
+    #[tokio::test]
+    async fn test_get_song_details_by_token_raw() {
+        let result = get_song_details(
+            "".to_string(),
+            "OCQeXSxcXkE".to_string(),
+            "".to_string(),
+            true,
+            false,
+        )
+        .await;
+
+        dbg!("{:?}", result);
+    }
+
+    #[tokio::test]
+    async fn test_get_song_details_by_link() {
+        let result = get_song_details(
+            "".to_string(),
+            "".to_string(),
+            "https://www.jiosaavn.com/song/ram-siya-ram/OCQeXSxcXkE".to_string(),
+            false,
+            false,
+        )
+        .await;
+
+        dbg!("{:?}", result);
+    }
+
+    #[tokio::test]
+    async fn test_get_song_details_by_link_raw() {
+        let result = get_song_details(
+            "".to_string(),
+            "".to_string(),
+            "https://www.jiosaavn.com/song/ram-siya-ram/OCQeXSxcXkE".to_string(),
+            true,
+            false,
+        )
+        .await;
+
+        dbg!("{:?}", result);
+    }
+
+    #[tokio::test]
+    async fn test_get_song_recommendations() {
         let result =
-            get_song_details_by_link("https://www.jiosaavn.com/song/thunderclouds/RT8zcBh9eUc")
-                .await?;
+            get_song_recommendations("5WXAlMNt".to_string(), "hindi".to_string(), false, false)
+                .await;
 
         dbg!("{:?}", result);
-
-        Ok(())
     }
 
     #[tokio::test]
-    async fn test_get_song_recommendations() -> Result<(), reqwest::Error> {
-        let result = get_song_recommendations("5WXAlMNt").await?;
+    async fn test_get_song_recommendations_raw() {
+        let result =
+            get_song_recommendations("5WXAlMNt".to_string(), "hindi".to_string(), true, false)
+                .await;
 
         dbg!("{:?}", result);
-
-        Ok(())
     }
 }

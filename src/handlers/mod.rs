@@ -24,4 +24,4 @@ pub use search_handler::{
     albums_search_handler, artists_search_handler, playlists_search_handler, search_all_handler,
     songs_search_handler, top_searches_handler,
 };
-pub use song_handler::{recommend_songs_handler, song_details_handler};
+pub use song_handler::{recommend_songs_handler, song_details_handler, SongParams};
