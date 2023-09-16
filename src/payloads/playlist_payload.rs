@@ -6,7 +6,8 @@ use crate::{
             PlaylistModulesArtistsResponse, PlaylistModulesCurrentlyTrendingPlaylistsResponse,
             PlaylistModulesRelatedParamsResponse, PlaylistModulesRelatedResponse,
             PlaylistModulesRequest, PlaylistModulesResponse,
-            PlaylistModulesTrendingPlaylistsParamsResponse, PlaylistRequest, PlaylistResponse,
+            PlaylistModulesTrendingPlaylistsParamsResponse, PlaylistRecRequest,
+            PlaylistRecResponse, PlaylistRequest, PlaylistResponse,
         },
     },
     utils::{create_image_links, parse_bool, parse_type},
@@ -42,7 +43,7 @@ pub fn playlist_payload(playlist: PlaylistRequest) -> PlaylistResponse {
             list_count: playlist.list_count.map(parse_type),
             is_dolby_content: more_info.is_dolby_content,
             video_count: more_info.video_count.map(parse_type),
-            fan_count: more_info.fan_count.map(|i| parse_type(i.replace(",", ""))),
+            fan_count: more_info.fan_count.map(|i| parse_type(i.replace(',', ""))),
             artists: more_info
                 .artists
                 .map(|a| a.into_iter().map(artist_mini_payload).collect()),
@@ -60,10 +61,7 @@ pub fn playlist_payload(playlist: PlaylistRequest) -> PlaylistResponse {
                 },
                 None => Some(vec![]),
             },
-            modules: match playlist.modules {
-                Some(modules) => Some(playlist_modules_payload(modules)),
-                None => None,
-            },
+            modules: playlist.modules.map(playlist_modules_payload),
         }
     }
 }
@@ -103,5 +101,18 @@ fn playlist_modules_payload(modules: PlaylistModulesRequest) -> PlaylistModulesR
             source: modules.artists.source,
             position: modules.artists.position,
         },
+    }
+}
+
+pub fn playlist_recommend_payload(playlist: PlaylistRecRequest) -> PlaylistRecResponse {
+    PlaylistRecResponse {
+        id: playlist.id,
+        name: playlist.title,
+        subtitle: playlist.subtitle,
+        type_field: playlist.type_field,
+        url: playlist.perma_url,
+        image: create_image_links(playlist.image),
+        explicit: parse_bool(playlist.explicit_content),
+        firstname: playlist.more_info.firstname,
     }
 }

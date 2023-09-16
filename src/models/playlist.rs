@@ -1,9 +1,11 @@
 use super::{
     artist::{ArtistMiniRequest, ArtistMiniResponse},
     misc::{Quality, Union},
+    response::CResponse,
     song::{SongRequest, SongResponse},
 };
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PlaylistRequest {
@@ -90,10 +92,30 @@ pub struct PlaylistModulesEntityParamsRequest {
     pub entity_language: String,
 }
 
-/*---------------------- Response ---------------------- */
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PlaylistRecRequest {
+    pub id: String,
+    pub title: String,
+    pub subtitle: String,
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub image: String,
+    pub perma_url: String,
+    pub explicit_content: String,
+    pub more_info: PlaylistRecMoreInfo,
+}
 
 #[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+pub struct PlaylistRecMoreInfo {
+    pub firstname: String,
+}
+
+/*---------------------- Response ---------------------- */
+pub type RPlaylist = Union<Value, CResponse<PlaylistResponse>>;
+
+pub type RPlaylistRec = Union<Value, CResponse<Vec<PlaylistRecResponse>>>;
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct PlaylistResponse {
     pub id: String,
     pub name: String,
@@ -168,4 +190,17 @@ pub struct PlaylistModulesTrendingPlaylistsParamsResponse {
     #[serde(rename = "type")]
     pub type_field: String,
     pub lang: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PlaylistRecResponse {
+    pub id: String,
+    pub name: String,
+    pub subtitle: String,
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub image: Quality,
+    pub url: String,
+    pub explicit: bool,
+    pub firstname: String,
 }

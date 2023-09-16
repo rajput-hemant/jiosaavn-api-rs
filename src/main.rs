@@ -14,8 +14,9 @@ use jiosaavn::handlers::{
     artist_albums_handler, artist_details_handler, artist_songs_handler, artists_search_handler,
     create_radio_handler, home_handler, lyrics_handler, modules_handler, not_found_handler,
     playlist_details_handler, playlists_search_handler, radio_songs_handler,
-    recommend_albums_handler, recommend_artists_songs_handler, recommend_songs_handler,
-    search_all_handler, song_details_handler, songs_search_handler, top_searches_handler,
+    recommend_albums_handler, recommend_artists_songs_handler, recommend_playlists_handler,
+    recommend_songs_handler, search_all_handler, song_details_handler, songs_search_handler,
+    top_searches_handler,
 };
 
 #[tokio::main]
@@ -42,6 +43,7 @@ async fn main() {
         .route("/album/same-year", get(albums_from_same_year_handler))
         // playlist details route
         .route("/playlist", get(playlist_details_handler))
+        .route("/playlist/recommend", get(recommend_playlists_handler))
         // artist details route
         .route("/artist", get(artist_details_handler))
         .route("/artist/songs", get(artist_songs_handler))

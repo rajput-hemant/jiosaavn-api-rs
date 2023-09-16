@@ -8,7 +8,12 @@
 		{ "source": "/song/recommend", "destination": "/api/song/recommend.rs" },
 		{ "source": "/album", "destination": "/api/album/details.rs" },
 		{ "source": "/album/recommend", "destination": "/api/album/recommend.rs" },
-		{ "source": "/album/same-year", "destination": "/api/album/same_year.rs" }
+		{ "source": "/album/same-year", "destination": "/api/album/same_year.rs" },
+		{ "source": "/playlist", "destination": "/api/playlist/details.rs" },
+		{
+			"source": "/playlist/recommend",
+			"destination": "/api/playlist/recommend.rs"
+		}
 	],
 	"headers": [
 		{

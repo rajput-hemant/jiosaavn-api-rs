@@ -52,3 +52,11 @@ path = "api/album/recommend.rs"
 [[bin]]
 name = "album_same_year"
 path = "api/album/same_year.rs"
+
+[[bin]]
+name = "playlist_details"
+path = "api/playlist/details.rs"
+
+[[bin]]
+name = "playlist_reco"
+path = "api/playlist/recommend.rs"
