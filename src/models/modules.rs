@@ -8,6 +8,7 @@ use super::{
     song::{SongRequest, SongResponse},
 };
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use std::collections::HashMap;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -238,7 +239,7 @@ pub struct ModuleItemRequest {
 
 /*---------------------- Response ---------------------- */
 
-pub type RModules = Union<ModulesRequest, CResponse<ModulesResponse>>;
+pub type RModules = Union<Value, CResponse<Union<Value, ModulesResponse>>>;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ModulesResponse {
@@ -372,15 +373,25 @@ pub struct PromoResponse {
     pub name: String,
     #[serde(rename = "type")]
     pub type_field: String,
-    pub language: Option<String>,
-    pub list: Option<String>,
-    pub list_count: Option<u64>,
-    pub list_type: Option<String>,
-    pub play_count: Option<u64>,
-    pub year: Option<u64>,
     pub explicit: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub language: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub list: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub list_count: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub list_type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub play_count: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub year: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub square_image: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub editorial_language: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub position: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub release_year: Option<u64>,
 }

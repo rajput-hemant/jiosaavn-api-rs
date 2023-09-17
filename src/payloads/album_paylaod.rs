@@ -56,11 +56,21 @@ pub fn album_payload(album: AlbumRequest) -> AlbumResponse {
         //         Union::B(list) => Some(list.into_iter().map(song_payload).collect()),
         //     },
         // ),
-        modules: match album.modules {
-            Some(modules) => Some(album_module_payload(modules)),
-            None => None,
-        },
+        modules: album.modules.map(album_module_payload),
     }
+}
+
+/// Create payload for multiple albums
+/// 
+/// ## Arguments
+/// 
+/// * `albums` - Vector of album requests
+/// 
+/// ## Returns
+/// 
+/// * `Vec<AlbumResponse>` - Vector of album payloads
+pub fn albums_payload(albums: Vec<AlbumRequest>) -> Vec<AlbumResponse> {
+    albums.into_iter().map(album_payload).collect()
 }
 
 fn album_module_payload(module: AlbumModulesRequest) -> AlbumModulesResponse {

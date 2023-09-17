@@ -1,9 +1,10 @@
 use std::collections::HashMap;
 
-use jiosaavn::{services::module_service::get_modules, utils::parse_bool};
+use axum::extract::Query;
+use jiosaavn::handlers::{modules_handler, ModulesParams};
 use serde_json::json;
 use url::Url;
-use vercel_runtime::{run, Body, Error, Request, Response, StatusCode};
+use vercel_runtime::{run, Body, Error, Request, Response};
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -17,24 +18,15 @@ pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
         .into_owned()
         .collect();
 
-    let lang = hash_query
-        .get("lang")
-        .unwrap_or(&"hindi,english".to_string())
-        .to_owned();
-    let raw = hash_query
-        .get("raw")
-        .unwrap_or(&"false".to_string())
-        .to_owned();
+    let lang = hash_query.get("lang").cloned();
+    let raw = hash_query.get("raw").cloned();
+    let camel = hash_query.get("camel").cloned();
 
-    let camel = hash_query
-        .get("camel")
-        .unwrap_or(&"false".to_string())
-        .to_owned();
-
-    let modules = json!(get_modules(lang, parse_bool(raw), parse_bool(camel)).await);
+    let params = ModulesParams { lang, raw, camel };
+    let (status, payload) = modules_handler(Query(params)).await;
 
     Ok(Response::builder()
-        .status(StatusCode::OK)
+        .status(status)
         .header("Content-Type", "application/json")
-        .body(modules.to_string().into())?)
+        .body(json!(payload.0).to_string().into())?)
 }

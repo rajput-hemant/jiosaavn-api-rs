@@ -1,9 +1,10 @@
 use base64::{engine::general_purpose, Engine as _};
 use openssl::symm::{decrypt, Cipher};
-use serde::de::DeserializeOwned;
+use serde::{de::DeserializeOwned, Serialize};
+use serde_json::{from_value, to_value, Value};
 use std::str::FromStr;
 
-use crate::models::misc::{Quality, QualityObject};
+use crate::models::misc::{Quality, QualityObject, Union};
 
 /// A utility function for creating download links of different qualities
 ///
@@ -26,7 +27,7 @@ pub fn create_download_links(encrypted_media_url: String) -> Quality {
     let key = b"38346591";
 
     let encrypted_data = general_purpose::STANDARD
-        .decode(&encrypted_media_url.as_bytes())
+        .decode(encrypted_media_url.as_bytes())
         .unwrap();
 
     let cipher = Cipher::des_ecb();
@@ -42,7 +43,7 @@ pub fn create_download_links(encrypted_media_url: String) -> Quality {
         .into_iter()
         .map(|quality| QualityObject {
             quality: quality.1.to_string(),
-            link: decrypted_link.replace("_96", &format!("{}", quality.0)),
+            link: decrypted_link.replace("_96", quality.0),
         })
         .collect();
 
@@ -61,35 +62,28 @@ pub fn create_download_links(encrypted_media_url: String) -> Quality {
 pub fn create_image_links(link: String) -> Quality {
     let qualities = vec!["50x50", "150x150", "500x500"];
 
-    if qualities.iter().all(|&quality| !link.contains(quality)) {
-        return Quality::String(link);
+    if let Some(q) = qualities.iter().find(|&&q| link.contains(q)) {
+        let download_links = qualities
+            .iter()
+            .map(|&quality| QualityObject {
+                quality: quality.to_string(),
+                link: link.replace(q, quality),
+            })
+            .collect();
+
+        return Quality::List(download_links);
     }
 
-    let mut image_links = Vec::new();
-
-    for quality in qualities {
-        let link = if link.contains("150x150") {
-            link.replace("150x150", quality)
-        } else {
-            link.replace("50x50", quality)
-        };
-
-        image_links.push(QualityObject {
-            quality: quality.to_string(),
-            link,
-        });
-    }
-
-    Quality::List(image_links)
+    Quality::String(link)
 }
 
-pub fn is_jio_saavn_link(url: String) -> bool {
+pub fn is_jio_saavn_link(url: &str) -> bool {
     let regex = regex::Regex::new(
         r"^(https?:\/\/)?(www.)?jiosaavn\.com\/(song|shows|album|artist|featured)\/(.+)$",
     )
     .unwrap();
 
-    regex.is_match(&url)
+    regex.is_match(url.trim())
 }
 
 /// A utility function for parsing explicit content string to boolean
@@ -102,10 +96,7 @@ pub fn is_jio_saavn_link(url: String) -> bool {
 ///
 /// * `bool` - A boolean value that indicates if the content is explicit or not
 pub fn parse_explicit_content(v: String) -> bool {
-    match v.as_str() {
-        "1" | "true" => true,
-        _ => false,
-    }
+    matches!(v.as_str(), "1" | "true")
 }
 
 /// A utility function for extracting the token from a link
@@ -118,7 +109,7 @@ pub fn parse_explicit_content(v: String) -> bool {
 ///
 /// * `String` - extracted token
 pub fn token_from_link(link: String) -> String {
-    link.split("/").last().unwrap().to_string()
+    link.split('/').last().unwrap().to_string()
 }
 
 /// A utility function for parsing string to a generic type
@@ -134,6 +125,48 @@ pub fn parse_type<T: FromStr + Default>(from: String) -> T {
     from.parse().unwrap_or_default()
 }
 
+/// Utility function to validate the `langs` query
+///
+/// ## Arguments
+///
+/// * `langs` - Comma separated languages
+///
+/// ## Returns
+///
+/// * `String` - Comma separated valid languages
+pub fn valid_langs(langs: String) -> String {
+    let valid_langs = [
+        "hindi",
+        "english",
+        "punjabi",
+        "tamil",
+        "telugu",
+        "marathi",
+        "gujarati",
+        "bengali",
+        "kannada",
+        "bhojpuri",
+        "malayalam",
+        "urdu",
+        "haryanvi",
+        "rajasthani",
+        "odia",
+        "assamese",
+    ];
+
+    let filtered_langs = langs
+        .split(',')
+        .filter(|l| valid_langs.contains(&l.trim()))
+        .collect::<Vec<_>>()
+        .join(",");
+
+    if filtered_langs.is_empty() {
+        "hindi,english".to_string()
+    } else {
+        filtered_langs
+    }
+}
+
 /// A utility function for parsing string to boolean
 ///
 /// ## Arguments
@@ -144,49 +177,63 @@ pub fn parse_type<T: FromStr + Default>(from: String) -> T {
 ///
 /// * `bool` - A boolean value
 pub fn parse_bool(from: String) -> bool {
-    match from.as_str() {
-        "1" | "true" => true,
-        _ => false,
-    }
+    matches!(from.as_str(), "1" | "true")
 }
 
-use serde_json::{Map, Value};
+/// A utility function to format the payload in camel case if `camel` is true
+///
+/// ## Arguments
+///
+/// * `value` - payload
+/// * `camel` - boolean value to indicate if the payload should be formatted in camel case
+/// * `formatter` - function to format the payload
+///
+/// ## Returns
+pub fn formatted_payload<F, T>(
+    value: Value,
+    camel: bool,
+    formatter: &dyn Fn(F) -> T,
+) -> Union<Value, T>
+where
+    F: DeserializeOwned,
+    T: DeserializeOwned + Serialize,
+{
+    from_value(value)
+        .map(|payload| match camel {
+            true => Union::A(to_camel_case(to_value(formatter(payload)).unwrap())),
+            false => Union::B(formatter(payload)),
+        })
+        .unwrap()
+}
 
-pub fn to_camel_case<T: DeserializeOwned>(input: Value) -> T {
+fn to_camel_case(input: Value) -> Value {
     match input {
-        Value::Object(obj) => {
-            let mut new_obj = Map::new();
-            for (key, value) in obj {
-                let new_key = convert_key_to_camel_case(&key);
-                let new_value = to_camel_case(value);
-                new_obj.insert(new_key, new_value);
-            }
-            // Value::Object(new_obj)
-            serde_json::from_value(Value::Object(new_obj)).unwrap()
-        }
-        Value::Array(vec) => {
-            let new_vec: Vec<Value> = vec.into_iter().map(|v| to_camel_case(v)).collect();
-            // Value::Array(new_vec)
-            serde_json::from_value(Value::Array(new_vec)).unwrap()
-        }
-        other => serde_json::from_value(other).unwrap(),
+        Value::Object(o) => Value::Object(
+            o.into_iter()
+                .map(|(k, v)| (convert_key_to_camel_case(&k), to_camel_case(v)))
+                .collect(),
+        ),
+
+        Value::Array(vec) => Value::Array(vec.into_iter().map(to_camel_case).collect()),
+
+        other => from_value(other).unwrap(),
     }
 }
 
 fn convert_key_to_camel_case(key: &str) -> String {
-    let mut result = String::new();
-    let mut capitalize_next = false;
-
-    for c in key.chars() {
-        if c == '_' {
-            capitalize_next = true;
-        } else if capitalize_next {
-            result.push(c.to_ascii_uppercase());
-            capitalize_next = false;
-        } else {
-            result.push(c);
-        }
-    }
-
-    result
+    key.split('_')
+        .enumerate()
+        .map(|(i, s)| {
+            if i == 0 {
+                s.to_string()
+            } else {
+                let mut chars = s.chars();
+                match chars.next() {
+                    Some(c) => c.to_uppercase().chain(chars).collect(),
+                    None => String::new(),
+                }
+            }
+        })
+        .collect::<Vec<_>>()
+        .join("")
 }

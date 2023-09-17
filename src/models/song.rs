@@ -146,8 +146,8 @@ pub struct SongModulesActorSongParamsRequest {
 }
 
 /*---------------------- Response ---------------------- */
-pub type RSong = Union<Value, CResponse<SongObjResponse>>;
-pub type RSongReco = Union<Value, CResponse<Vec<SongResponse>>>;
+pub type RSong = Union<Value, CResponse<Union<Value, SongObjResponse>>>;
+pub type RSongReco = Union<Value, CResponse<Union<Value, Vec<SongResponse>>>>;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SongObjResponse {

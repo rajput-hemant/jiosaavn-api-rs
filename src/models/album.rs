@@ -102,8 +102,8 @@ pub struct AlbumYearLangParamsRequest {
 
 /*---------------------- Response ---------------------- */
 
-pub type RAlbum = Union<Value, CResponse<AlbumResponse>>;
-pub type RAlbumVec = Union<Value, CResponse<Vec<AlbumResponse>>>;
+pub type RAlbum = Union<Value, CResponse<Union<Value, AlbumResponse>>>;
+pub type RAlbumVec = Union<Value, CResponse<Union<Value, Vec<AlbumResponse>>>>;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct AlbumResponse {

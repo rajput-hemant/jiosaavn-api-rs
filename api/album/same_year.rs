@@ -3,7 +3,7 @@ use jiosaavn::handlers::{albums_from_same_year_handler, AlbumParams};
 use serde_json::json;
 use std::collections::HashMap;
 use url::Url;
-use vercel_runtime::{run, Body, Error, Request, Response, StatusCode};
+use vercel_runtime::{run, Body, Error, Request, Response};
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -32,10 +32,10 @@ pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
         camel,
     };
 
-    let payload = json!(albums_from_same_year_handler(Query(params)).await.0);
+    let (status, payload) = albums_from_same_year_handler(Query(params)).await;
 
     Ok(Response::builder()
-        .status(StatusCode::OK)
+        .status(status)
         .header("Content-Type", "application/json")
-        .body(payload.to_string().into())?)
+        .body(json!(payload.0).to_string().into())?)
 }

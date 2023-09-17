@@ -111,9 +111,9 @@ pub struct PlaylistRecMoreInfo {
 }
 
 /*---------------------- Response ---------------------- */
-pub type RPlaylist = Union<Value, CResponse<PlaylistResponse>>;
+pub type RPlaylist = Union<Value, CResponse<Union<Value, PlaylistResponse>>>;
 
-pub type RPlaylistRec = Union<Value, CResponse<Vec<PlaylistRecResponse>>>;
+pub type RPlaylistVec = Union<Value, CResponse<Union<Value, Vec<PlaylistRecResponse>>>>;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PlaylistResponse {

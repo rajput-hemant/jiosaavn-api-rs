@@ -17,10 +17,7 @@ use crate::{
 pub fn song_obj_payload(obj: SongObjRequest) -> SongObjResponse {
     SongObjResponse {
         songs: obj.songs.into_iter().map(song_payload).collect(),
-        modules: match obj.modules {
-            Some(modules) => Some(song_modules_payload(modules)),
-            None => None,
-        },
+        modules: obj.modules.map(song_modules_payload),
     }
 }
 
@@ -77,6 +74,19 @@ pub fn song_payload(song: SongRequest) -> SongResponse {
         vlink: more_info.vlink,
         copyright_text: more_info.copyright_text,
     }
+}
+
+/// Create payload for multiple songs
+/// 
+/// ## Arguments
+/// 
+/// * `songs` - Vector of song requests
+/// 
+/// ## Returns
+/// 
+/// * `Vec<SongResponse>` - Vector of song payloads
+pub fn songs_payload(songs: Vec<SongRequest>) -> Vec<SongResponse> {
+    songs.into_iter().map(song_payload).collect()
 }
 
 fn song_modules_payload(modules: SongModulesRequest) -> SongModulesResponse {

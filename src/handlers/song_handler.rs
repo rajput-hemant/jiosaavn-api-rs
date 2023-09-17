@@ -5,9 +5,9 @@ use crate::{
         song::{RSong, RSongReco},
     },
     services::song_service::{get_song_details, get_song_recommendations},
-    utils::{is_jio_saavn_link, parse_bool},
+    utils::{is_jio_saavn_link, parse_bool, valid_langs},
 };
-use axum::{extract::Query, Json};
+use axum::{extract::Query, http::StatusCode, Json};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -27,63 +27,100 @@ pub struct SongParams {
 /// * `id` - Query param for song(s) id(s)
 /// * `token` - Query param for song token
 /// * `link` - Query param for song link
+/// * `raw` - Whether to return raw response or not
+/// * `camel` - Whether to convert response to camel case or not
 ///
 /// ## Returns
 ///
-/// * `Json<RSong>` - Json response
-pub async fn song_details_handler(Query(params): Query<SongParams>) -> Json<RSong> {
-    match (params.id, params.token, params.link) {
-        (None, None, None) => Json(Union::B(CResponse::new(
-            Status::Failed,
-            "❌ Please provide song id(s) or token or a link",
-            None,
-        ))),
+/// * `(StatusCode, Json<CResponse<SongResponse>>)` - Status code and JSON response
+pub async fn song_details_handler(Query(params): Query<SongParams>) -> (StatusCode, Json<RSong>) {
+    let id = params.id.unwrap_or_default();
+    let token = params.token.unwrap_or_default();
+    let link = params.link.unwrap_or_default();
+    let raw = parse_bool(params.raw.unwrap_or_default());
+    let camel = parse_bool(params.camel.unwrap_or_default());
 
-        (_, _, Some(link)) if !is_jio_saavn_link(link.to_owned()) => {
-            Json(Union::B(CResponse::new(
+    let (status, response) = match (id, token, link) {
+        (id, token, link) if id.is_empty() && token.is_empty() && link.is_empty() => (
+            StatusCode::BAD_REQUEST,
+            Union::B(CResponse::new(
                 Status::Failed,
-                "❌ Please provide a valid JioSaavn link",
+                "❌ Please provide Song Id(s) or token or a link".to_string(),
                 None,
-            )))
+            )),
+        ),
+
+        (_, _, link) if !(link.is_empty() || is_jio_saavn_link(&link) && link.contains("song")) => {
+            (
+                StatusCode::BAD_REQUEST,
+                Union::B(CResponse::new(
+                    Status::Failed,
+                    "❌ Please provide a valid JioSaavn link".to_string(),
+                    None,
+                )),
+            )
         }
 
-        (id, token, link) => Json(
-            get_song_details(
-                id.unwrap_or_default(),
-                token.unwrap_or_default(),
-                link.unwrap_or_default(),
-                parse_bool(params.raw.unwrap_or_else(|| "0".to_string())),
-                parse_bool(params.camel.unwrap_or_else(|| "0".to_string())),
-            )
-            .await,
-        ),
-    }
+        (id, token, link) => {
+            let response = get_song_details(id, token, link, raw, camel).await;
+
+            match response {
+                Ok(song) => (StatusCode::OK, song),
+                Err(e) => (
+                    StatusCode::BAD_REQUEST,
+                    Union::B(CResponse::new(Status::Failed, e, None)),
+                ),
+            }
+        }
+    };
+
+    (status, Json(response))
 }
 
-/// Handler for `/song/recommendations` route
+/// Handler for `/song/recommend` route
 ///
 /// ## Arguments
 ///
 /// * `id` - Query parameter for song id
+/// * `lang` - Query parameter for Comma separated languages
+/// * `raw` - Whether to return raw response or not
+/// * `camel` - Whether to convert response to camel case or not
 ///
 /// ## Returns
 ///
-/// * `Json<CustomResponse<Vec<SongResponse>>>` - Json response
-pub async fn recommend_songs_handler(Query(params): Query<SongParams>) -> Json<RSongReco> {
-    match (params.id, params.lang) {
-        (Some(id), lang) => Json(
-            get_song_recommendations(
-                id,
-                lang.unwrap_or_else(|| "hindi,english".to_string()),
-                parse_bool(params.raw.unwrap_or_else(|| "0".to_string())),
-                parse_bool(params.camel.unwrap_or_else(|| "0".to_string())),
+/// * `(StatusCode, Json<CResponse<RSongReco>>)` - Status code and JSON response
+pub async fn recommend_songs_handler(
+    Query(params): Query<SongParams>,
+) -> (StatusCode, Json<RSongReco>) {
+    let (status, response) = match params.id {
+        Some(id) if !id.is_empty() => {
+            let response = get_song_recommendations(
+                id.to_string(),
+                valid_langs(params.lang.unwrap_or_default()),
+                parse_bool(params.raw.unwrap_or_default()),
+                parse_bool(params.camel.unwrap_or_default()),
             )
-            .await,
+            .await;
+
+            match response {
+                Ok(songs) => (StatusCode::OK, songs),
+
+                Err(e) => (
+                    StatusCode::BAD_REQUEST,
+                    Union::B(CResponse::new(Status::Failed, e, None)),
+                ),
+            }
+        }
+
+        _ => (
+            StatusCode::BAD_REQUEST,
+            Union::B(CResponse::new(
+                Status::Failed,
+                "❌ Please provide a song id".to_string(),
+                None,
+            )),
         ),
-        (None, _) => Json(Union::B(CResponse::new(
-            Status::Failed,
-            "❌ Please provide song id",
-            None,
-        ))),
-    }
+    };
+
+    (status, Json(response))
 }

@@ -6,12 +6,12 @@ use crate::{
         response::{CResponse, Status},
     },
     payloads::modules_payload,
+    utils::{formatted_payload, valid_langs},
 };
 
 use super::api_service::http;
 
-/// Helper function to make request to `content.getBrowseModules` endpoint of JioSaavn API,
-/// to get home modules / launch data and return modules payload
+/// Helper function to get home launch data/modules from JioSaavn API
 ///
 /// ## Arguments
 ///
@@ -19,40 +19,42 @@ use super::api_service::http;
 /// * Available languages: `hindi`, `english`, `punjabi`, `tamil`, `telugu`, `marathi`,
 ///  `gujarati`, `bengali`, `kannada`, `bhojpuri`, `malayalam`, `urdu`, `haryanvi`,
 ///  `rajasthani`, `odia`, `assamese`
+/// * `raw` - Whether to return raw response or not
+/// * `camel` - Whether to convert response to camel case or not
 ///
 /// ## Returns
 ///
-/// * `RModules` - modules payload
-pub async fn get_modules(lang: String, raw: bool, _: bool) -> RModules {
+/// * `Result<RModules, String>` - Modules payload
+pub async fn get_modules(langs: String, raw: bool, camel: bool) -> Result<RModules, String> {
     let response = http(
         LAUNCH_DATA,
         true,
-        Some(vec![("language".to_string(), lang)].into_iter().collect()),
+        Some(
+            vec![("language".to_string(), valid_langs(langs))]
+                .into_iter()
+                .collect(),
+        ),
     )
     .await;
 
     match response {
         Ok(modules) => {
             if raw {
-                Union::A(modules)
+                Ok(Union::A(modules))
             } else {
-                // TODO: Add camel case conversion
+                let payload = formatted_payload(modules, camel, &modules_payload);
 
-                Union::B(CResponse::new(
+                Ok(Union::B(CResponse::new(
                     Status::Success,
-                    "✅ Home Data fetched successfully",
-                    Some(modules_payload(modules)),
-                ))
+                    "✅ Home Data fetched successfully".to_string(),
+                    Some(payload),
+                )))
             }
         }
         Err(e) => {
             println!("Error: {e}");
 
-            Union::B(CResponse::new(
-                Status::Failed,
-                "❌ Something went wrong",
-                None,
-            ))
+            Err("❌ Something went wrong".to_string())
         }
     }
 }
@@ -65,13 +67,55 @@ mod tests {
     async fn test_get_modules() {
         let modules = get_modules("hindi,english".to_string(), false, false).await;
 
-        dbg!("{:?}", modules);
+        assert!(modules.is_ok());
+
+        match modules.unwrap() {
+            Union::A(_) => {}
+            Union::B(res) => {
+                assert_eq!(res.status, Status::Success);
+                assert!(res.data.is_some());
+
+                match res.data.unwrap() {
+                    Union::A(_) => {}
+                    Union::B(mods) => {
+                        assert!(!mods.albums.data.is_empty());
+                    }
+                }
+            }
+        }
     }
 
     #[tokio::test]
     async fn test_get_modules_raw() {
         let modules = get_modules("hindi,english".to_string(), true, false).await;
 
-        dbg!("{:?}", modules);
+        assert!(modules.is_ok());
+
+        match modules.unwrap() {
+            Union::A(modules) => {
+                assert!(!modules["new_albums"].as_array().unwrap().is_empty());
+            }
+            Union::B(_) => {}
+        }
+    }
+
+    #[tokio::test]
+    async fn test_get_modules_camel() {
+        let modules = get_modules("hindi,english".to_string(), false, true).await;
+
+        assert!(modules.is_ok());
+
+        match modules.unwrap() {
+            Union::A(res) => {
+                assert_eq!(res["status"], "Success");
+                assert!(res["data"].is_object());
+                assert!(res["data"]["cityMod"].is_object());
+                assert!(!res["data"]["cityMod"]["data"]
+                    .as_array()
+                    .unwrap()
+                    .is_empty());
+            }
+            Union::B(_) => {}
+        }
     }
 }

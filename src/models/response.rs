@@ -9,12 +9,12 @@ pub enum Status {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CResponse<T> {
     pub status: Status,
-    pub message: &'static str,
+    pub message: String,
     pub data: Option<T>,
 }
 
 impl<T> CResponse<T> {
-    pub fn new(status: Status, message: &'static str, data: Option<T>) -> Self {
+    pub fn new(status: Status, message: String, data: Option<T>) -> Self {
         Self {
             status,
             message,

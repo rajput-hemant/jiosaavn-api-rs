@@ -66,6 +66,31 @@ pub fn playlist_payload(playlist: PlaylistRequest) -> PlaylistResponse {
     }
 }
 
+/// Create playlist recommend payload from playlist recommend request
+///
+/// ## Arguments
+///
+/// * `playlists` - Playlist recommend request
+///
+/// ## Returns
+///
+/// * `Vec<PlaylistRecResponse>` - Playlist recommend payload
+pub fn playlist_recommend_payload(playlists: Vec<PlaylistRecRequest>) -> Vec<PlaylistRecResponse> {
+    playlists
+        .into_iter()
+        .map(|playlist| PlaylistRecResponse {
+            id: playlist.id,
+            name: playlist.title,
+            subtitle: playlist.subtitle,
+            type_field: playlist.type_field,
+            url: playlist.perma_url,
+            image: create_image_links(playlist.image),
+            explicit: parse_bool(playlist.explicit_content),
+            firstname: playlist.more_info.firstname,
+        })
+        .collect()
+}
+
 fn playlist_modules_payload(modules: PlaylistModulesRequest) -> PlaylistModulesResponse {
     PlaylistModulesResponse {
         related_playlist: PlaylistModulesRelatedResponse {
@@ -101,18 +126,5 @@ fn playlist_modules_payload(modules: PlaylistModulesRequest) -> PlaylistModulesR
             source: modules.artists.source,
             position: modules.artists.position,
         },
-    }
-}
-
-pub fn playlist_recommend_payload(playlist: PlaylistRecRequest) -> PlaylistRecResponse {
-    PlaylistRecResponse {
-        id: playlist.id,
-        name: playlist.title,
-        subtitle: playlist.subtitle,
-        type_field: playlist.type_field,
-        url: playlist.perma_url,
-        image: create_image_links(playlist.image),
-        explicit: parse_bool(playlist.explicit_content),
-        firstname: playlist.more_info.firstname,
     }
 }
