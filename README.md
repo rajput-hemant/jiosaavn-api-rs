@@ -1,6 +1,6 @@
 <div align = center>
 
-![][views] ![][stars] ![][forks] ![][issues] ![][license] ![][code-size] ![][commit-activity]
+![][ci] ![][views] ![][stars] ![][forks] ![][issues] ![][license] ![][code-size] ![][commit-activity]
 
 # JioSaavn API
 
@@ -189,3 +189,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 [commit-activity]: https://img.shields.io/github/commit-activity/w/rajput-hemant/jiosaavn-api-rs
 [forks]: https://img.shields.io/github/forks/rajput-hemant/jiosaavn-api-rs?style=flat
 [stars]: https://img.shields.io/github/stars/rajput-hemant/jiosaavn-api-rs
+[ci]: https://github.com/rajput-hemant/jiosaavn-api-rs/actions/workflows/ci.yml/badge.svg
