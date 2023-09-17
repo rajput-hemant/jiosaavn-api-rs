@@ -31,117 +31,127 @@ pub fn song_obj_payload(obj: SongObjRequest) -> SongObjResponse {
 ///
 /// * `SongResponse` - Song payload
 pub fn song_payload(song: SongRequest) -> SongResponse {
-    let more_info = song.more_info;
+    let s = song;
+    let m = s.more_info;
 
     SongResponse {
-        id: song.id,
-        name: song.title,
-        subtitle: song.subtitle,
-        type_field: song.type_field,
-        url: song.perma_url,
-        image: create_image_links(song.image),
-        language: song.language,
-        year: parse_type(song.year),
-        header_desc: song.header_desc,
-        play_count: parse_type(match song.play_count {
+        id: s.id,
+        name: s.title,
+        subtitle: s.subtitle,
+        type_field: s.type_field,
+        url: s.perma_url,
+        image: create_image_links(s.image),
+        language: s.language,
+        year: parse_type(s.year),
+        header_desc: s.header_desc,
+        play_count: parse_type(match s.play_count {
             Union::A(play_count) => play_count,
             Union::B(play_count) => play_count.to_string(),
         }),
-        explicit: parse_bool(song.explicit_content),
-        list_count: parse_type(song.list_count),
-        list_type: song.list_type,
-        list: song.list,
-        music: more_info.music,
-        album_id: more_info.album_id,
-        album: more_info.album,
-        label: more_info.label,
-        label_url: more_info.label_url,
-        origin: more_info.origin,
-        is_dolby_content: more_info.is_dolby_content,
-        _320kbps: parse_bool(more_info._320kbps),
-        download_url: create_download_links(more_info.encrypted_media_url),
-        album_url: more_info.album_url,
-        duration: parse_type(more_info.duration),
-        rights: more_info.rights,
-        has_lyrics: parse_bool(more_info.has_lyrics),
-        lyrics_id: more_info.lyrics_id,
-        lyrics_snippet: more_info.lyrics_snippet,
-        starred: parse_bool(more_info.starred),
-        artist_map: artist_map_payload(more_info.artist_map),
-        release_date: more_info.release_date,
-        triller_available: more_info.triller_available,
-        vcode: more_info.vcode,
-        vlink: more_info.vlink,
-        copyright_text: more_info.copyright_text,
+        explicit: parse_bool(s.explicit_content),
+        list_count: parse_type(s.list_count),
+        list_type: s.list_type,
+        list: s.list,
+        music: m.music,
+        album_id: m.album_id,
+        album: m.album,
+        label: m.label,
+        label_url: m.label_url,
+        origin: m.origin,
+        is_dolby_content: m.is_dolby_content,
+        _320kbps: parse_bool(m._320kbps),
+        download_url: create_download_links(m.encrypted_media_url),
+        album_url: m.album_url,
+        duration: parse_type(m.duration),
+        rights: m.rights,
+        has_lyrics: parse_bool(m.has_lyrics),
+        lyrics_id: m.lyrics_id,
+        lyrics_snippet: m.lyrics_snippet,
+        starred: parse_bool(m.starred),
+        artist_map: artist_map_payload(m.artist_map),
+        release_date: m.release_date,
+        triller_available: m.triller_available,
+        vcode: m.vcode,
+        vlink: m.vlink,
+        copyright_text: m.copyright_text,
     }
 }
 
 /// Create payload for multiple songs
-/// 
+///
 /// ## Arguments
-/// 
+///
 /// * `songs` - Vector of song requests
-/// 
+///
 /// ## Returns
-/// 
+///
 /// * `Vec<SongResponse>` - Vector of song payloads
 pub fn songs_payload(songs: Vec<SongRequest>) -> Vec<SongResponse> {
     songs.into_iter().map(song_payload).collect()
 }
 
 fn song_modules_payload(modules: SongModulesRequest) -> SongModulesResponse {
+    let m = modules;
+    let (r, c, s_ar, s_ac, a) = (
+        m.reco,
+        m.currently_trending,
+        m.songs_by_same_artists,
+        m.songs_by_same_actors,
+        m.artists,
+    );
+
     SongModulesResponse {
         recommend: SongModulesRecommendResponse {
-            title: modules.reco.title,
-            subtitle: modules.reco.subtitle,
+            title: r.title,
+            subtitle: r.subtitle,
             source: "/song/recommend".to_string(),
-            position: modules.reco.position,
+            position: r.position,
             params: SongModulesRecommendParamsResponse {
-                id: modules.reco.source_params.pid,
-                lang: modules.reco.source_params.language,
+                id: r.source_params.pid,
+                lang: r.source_params.language,
             },
         },
 
         currently_trending: SongModulesCurrentlyTrendingResponse {
-            title: modules.currently_trending.title,
-            subtitle: modules.currently_trending.subtitle,
+            title: c.title,
+            subtitle: c.subtitle,
             source: "/get/trending".to_string(),
-            position: modules.currently_trending.position,
+            position: c.position,
             params: SongModulesTrendingParamsResponse {
-                type_field: modules.currently_trending.source_params.entity_type,
-                lang: modules.currently_trending.source_params.entity_language,
+                type_field: c.source_params.entity_type,
+                lang: c.source_params.entity_language,
             },
         },
 
         songs_by_same_artists: SongModulesSongsBySameArtistsResponse {
-            title: modules.songs_by_same_artists.title,
-            subtitle: modules.songs_by_same_artists.subtitle,
+            title: s_ar.title,
+            subtitle: s_ar.subtitle,
             source: "/artist/top-songs".to_string(),
-            position: modules.songs_by_same_artists.position,
+            position: s_ar.position,
             params: SongModulesArtistSongParamsResponse {
-                artist_id: modules.songs_by_same_artists.source_params.artist_ids,
-                song_id: modules.songs_by_same_artists.source_params.song_id,
-                lang: modules.songs_by_same_artists.source_params.language,
+                artist_id: s_ar.source_params.artist_ids,
+                song_id: s_ar.source_params.song_id,
+                lang: s_ar.source_params.language,
             },
         },
 
         songs_by_same_actors: SongModulesSongsBySameActorsResponse {
-            title: modules.songs_by_same_actors.title,
-            subtitle: modules.songs_by_same_actors.subtitle,
+            title: s_ac.title,
+            subtitle: s_ac.subtitle,
             source: "/get/actor-top-songs".to_string(),
-            position: modules.songs_by_same_actors.position,
+            position: s_ac.position,
             params: SongModulesActorSongParamsResponse {
-                actor_id: modules.songs_by_same_actors.source_params.actor_ids,
-                song_id: modules.songs_by_same_actors.source_params.song_id,
-                lang: modules.songs_by_same_actors.source_params.language,
+                actor_id: s_ac.source_params.actor_ids,
+                song_id: s_ac.source_params.song_id,
+                lang: s_ac.source_params.language,
             },
         },
 
         artists: SongModulesArtistsResponse {
-            title: modules.artists.title,
-            subtitle: modules.artists.subtitle,
-            source: modules.artists.source,
-            position: modules.artists.position,
+            title: a.title,
+            subtitle: a.subtitle,
+            source: a.source,
+            position: a.position,
         },
     }
 }

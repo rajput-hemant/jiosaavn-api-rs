@@ -11,7 +11,7 @@ use crate::{
     utils::{create_image_links, parse_bool, parse_type},
 };
 
-use super::{artist_payload::artist_map_payload, song_payload};
+use super::{artist_payload::artist_map_payload, songs_payload};
 
 /// Create album payload from album request
 ///
@@ -23,95 +23,96 @@ use super::{artist_payload::artist_map_payload, song_payload};
 ///
 /// * `AlbumResponse` - Album payload
 pub fn album_payload(album: AlbumRequest) -> AlbumResponse {
+    let a = album;
+    let m = a.more_info;
+
     AlbumResponse {
-        id: album.id,
-        name: album.title,
-        subtitle: album.subtitle,
-        type_field: album.type_field,
-        image: create_image_links(album.image),
-        url: album.perma_url,
-        header_desc: album.header_desc,
-        explicit: parse_bool(album.explicit_content),
-        language: album.language,
-        play_count: parse_type(album.play_count),
-        year: parse_type(album.year),
-        label_url: album.more_info.label_url,
-        list_count: parse_type(album.list_count),
-        list_type: album.list_type,
-        artist_map: album.more_info.artist_map.map(artist_map_payload),
-        copyright_text: album.more_info.copyright_text,
-        is_dolby_content: album.more_info.is_dolby_content,
-        song_count: album.more_info.song_count.map(parse_type),
-        songs: match album.list {
-            Some(songs) => match songs {
-                Union::A(_) => Some(vec![]),
-                Union::B(list) => Some(list.into_iter().map(song_payload).collect()),
-            },
-            None => Some(vec![]),
-        },
-        // songs: album.list.map_or_else(
-        //     || Some(vec![]),
-        //     |songs| match songs {
-        //         Union::A(_) => Some(vec![]),
-        //         Union::B(list) => Some(list.into_iter().map(song_payload).collect()),
-        //     },
-        // ),
-        modules: album.modules.map(album_module_payload),
+        id: a.id,
+        name: a.title,
+        subtitle: a.subtitle,
+        type_field: a.type_field,
+        image: create_image_links(a.image),
+        url: a.perma_url,
+        header_desc: a.header_desc,
+        explicit: parse_bool(a.explicit_content),
+        language: a.language,
+        play_count: parse_type(a.play_count),
+        year: parse_type(a.year),
+        label_url: m.label_url,
+        list_count: parse_type(a.list_count),
+        list_type: a.list_type,
+        artist_map: m.artist_map.map(artist_map_payload),
+        copyright_text: m.copyright_text,
+        is_dolby_content: m.is_dolby_content,
+        song_count: m.song_count.map(parse_type),
+        songs: Some(a.list.map_or(vec![], |songs| match songs {
+            Union::A(_) => vec![],
+            Union::B(songs) => songs_payload(songs),
+        })),
+        modules: a.modules.map(album_module_payload),
     }
 }
 
 /// Create payload for multiple albums
-/// 
+///
 /// ## Arguments
-/// 
+///
 /// * `albums` - Vector of album requests
-/// 
+///
 /// ## Returns
-/// 
+///
 /// * `Vec<AlbumResponse>` - Vector of album payloads
 pub fn albums_payload(albums: Vec<AlbumRequest>) -> Vec<AlbumResponse> {
     albums.into_iter().map(album_payload).collect()
 }
 
 fn album_module_payload(module: AlbumModulesRequest) -> AlbumModulesResponse {
+    let m = module;
+    let (r, c, t, a) = (
+        m.reco,
+        m.currently_trending,
+        m.top_albums_from_same_year,
+        m.artists,
+    );
+
     AlbumModulesResponse {
         recommend: AlbumModulesRecommendResponse {
-            title: module.reco.title,
-            subtitle: module.reco.subtitle,
+            title: r.title,
+            subtitle: r.subtitle,
             source: "/album/recommend".to_string(),
-            position: module.reco.position,
+            position: r.position,
             params: AlbumRecommendParamsResponse {
-                id: module.reco.source_params.albumid,
+                id: r.source_params.albumid,
             },
         },
 
         currently_trending: AlbumModulesCurrentlyTrendingResponse {
-            title: module.currently_trending.title,
-            subtitle: module.currently_trending.subtitle,
+            title: c.title,
+            subtitle: c.subtitle,
             source: "/get/trending".to_string(),
-            position: module.currently_trending.position,
+            position: c.position,
             params: AlbumTrendingParamsResponse {
-                type_field: module.currently_trending.source_params.entity_type,
-                lang: module.currently_trending.source_params.entity_language,
+                type_field: c.source_params.entity_type,
+                lang: c.source_params.entity_language,
             },
         },
 
         top_albums_from_same_year: AlbumModulesTopAlbumsFromSameYearResponse {
-            title: module.top_albums_from_same_year.title,
-            subtitle: module.top_albums_from_same_year.subtitle,
+            title: t.title,
+            subtitle: t.subtitle,
             source: "/album/same-year".to_string(),
-            position: module.currently_trending.position,
+            position: t.position,
             params: AlbumYearLangParamsResponse {
-                lang: module.top_albums_from_same_year.source_params.album_lang,
-                year: module.top_albums_from_same_year.source_params.album_year,
+                lang: t.source_params.album_lang,
+                year: t.source_params.album_year,
             },
         },
 
         artists: AlbumModulesArtistsResponse {
-            title: module.artists.title,
-            subtitle: module.artists.subtitle,
-            source: module.artists.source,
-            position: module.artists.position,
+            title: a.title,
+            subtitle: a.subtitle,
+            source: a.source,
+            position: a.position,
         },
     }
 }

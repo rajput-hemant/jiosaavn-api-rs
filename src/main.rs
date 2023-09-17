@@ -11,7 +11,7 @@ use tower_http::cors::{Any, CorsLayer};
 
 use jiosaavn::handlers::{
     album_details_handler, albums_from_same_year_handler, albums_search_handler,
-    artist_albums_handler, artist_details_handler, artist_songs_handler, artists_search_handler,
+    artist_details_handler, artist_songs_albums_handler, artists_search_handler,
     create_radio_handler, home_handler, lyrics_handler, modules_handler, not_found_handler,
     playlist_details_handler, playlists_search_handler, radio_songs_handler,
     recommend_albums_handler, recommend_artists_songs_handler, recommend_playlists_handler,
@@ -46,9 +46,9 @@ async fn main() {
         .route("/playlist/recommend", get(recommend_playlists_handler))
         // artist details route
         .route("/artist", get(artist_details_handler))
-        .route("/artist/songs", get(artist_songs_handler))
-        .route("/artist/albums", get(artist_albums_handler))
+        .route("/artist/:path", get(artist_songs_albums_handler))
         .route("/artist/recommend", get(recommend_artists_songs_handler))
+        .route("/artist/top-songs", get(recommend_artists_songs_handler))
         // search routes
         .route("/search", get(search_all_handler))
         .route("/search/all", get(search_all_handler))

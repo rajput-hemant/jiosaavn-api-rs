@@ -75,16 +75,16 @@ pub async fn get_playlist_details(
 }
 
 /// Helper function to get playlist recommendations by id
-/// 
+///
 /// ## Arguments
-/// 
+///
 /// * `id` - Playlist id
 /// * `lang` - Language of the recommendations
 /// * `raw` - Whether to return raw response or not
 /// * `camel` - Whether to convert response to camel case or not
-/// 
+///
 /// ## Returns
-/// 
+///
 /// * `Result<RPlaylistVec, String>` - List of recommended playlists
 pub async fn get_playlist_recommendations(
     id: String,

@@ -10,10 +10,7 @@ pub mod search_handler;
 pub mod song_handler;
 
 pub use album_handler::*;
-pub use artist_handler::{
-    artist_albums_handler, artist_details_handler, artist_songs_handler,
-    recommend_artists_songs_handler,
-};
+pub use artist_handler::*;
 pub use home_handler::*;
 pub use lyrics_handler::lyrics_handler;
 pub use modules_handler::*;

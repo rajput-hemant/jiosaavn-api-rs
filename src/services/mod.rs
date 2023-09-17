@@ -8,3 +8,14 @@ pub mod playlist_service;
 pub mod radio_service;
 pub mod search_service;
 pub mod song_service;
+
+pub use album_service::*;
+pub use api_service::*;
+pub use artist_service::*;
+pub use home_service::*;
+pub use lyrics_service::*;
+pub use module_service::*;
+pub use playlist_service::*;
+pub use radio_service::*;
+pub use search_service::*;
+pub use song_service::*;

@@ -83,16 +83,16 @@ pub async fn playlist_details_handler(
 }
 
 /// Handler for `/playlist/recommend` route
-/// 
+///
 /// ## Arguments
-/// 
+///
 /// * `id` - Query parameter for playlist id
 /// * `lang` - Optional query parameter for Comma separated languages
 /// * `raw` - Whether to return raw response or not
 /// * `camel` - Whether to convert response to camel case or not
-/// 
+///
 /// ## Returns
-/// 
+///
 /// * `(StatusCode, Json<CResponse<RPlaylistVec>>)` - Status code and JSON response
 pub async fn recommend_playlists_handler(
     Query(params): Query<PlaylistParams>,
