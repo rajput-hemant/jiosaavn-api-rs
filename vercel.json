@@ -13,6 +13,15 @@
 		{
 			"source": "/playlist/recommend",
 			"destination": "/api/playlist/recommend.rs"
+		},
+		{ "source": "/artist", "destination": "/api/artist/details.rs" },
+		{
+			"source": "/artist/(recommend|top-songs)",
+			"destination": "/api/artist/recommend.rs"
+		},
+		{
+			"source": "/artist/(songs|albums)",
+			"destination": "/api/artist/songs_albums.rs"
 		}
 	],
 	"headers": [
