@@ -1,79 +1,109 @@
-use axum::{extract::Query, Json};
+use axum::{
+    extract::{Path, Query},
+    http::StatusCode,
+    Json,
+};
 use serde::{Deserialize, Serialize};
 
 use crate::{
     models::{
-        radio::{Radio, RadioSongResponse},
-        response::{CustomResponse, StatusCode},
+        misc::Union,
+        radio::{RRadioSongs, RRadioStation, RadioStationType},
+        response::{CResponse, Status},
     },
-    services::radio_service::{create_radio, get_radio_songs, RadioStationType},
+    services::radio_service::{create_radio, get_radio_songs},
+    utils::parse_bool,
 };
 
 #[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Params {
-    name: Option<String>,
-    language: Option<String>,
+pub struct RadioParams {
+    pub song_id: Option<String>,
+    pub artist_id: Option<String>,
+    pub name: Option<String>,
+    pub n: Option<String>,
+    pub mode: Option<String>,
+    pub lang: Option<String>,
+    pub id: Option<String>,
     #[serde(rename = "type")]
-    type_field: Option<RadioStationType>,
-
-    id: Option<String>,
-    count: Option<u64>,
-    next: Option<u64>,
+    pub entity_type: Option<String>,
+    pub raw: Option<String>,
+    pub camel: Option<String>,
 }
 
-/// Handler for `/radio` OR `/radio/create` route
+/// Handler for `/radio/(featured|artist|entity)` OR `/radio/create/(featured|artist|entity)` route
 ///
 /// ## Arguments
 ///
 /// * `name` - radio name
-/// * `language` - radio language
-/// * `type` - radio type
+/// * `lang` - radio language
+/// * `song_id` - song id
+/// * `artist_id` - artist id
+/// * `mode` - radio mode
+/// * `id` - entity id
+/// * `type` - entity type
+/// * `raw` - weather to return raw response
+/// * `camel` - weather to return camel case response keys
 ///
 /// ## Returns
 ///
-/// * `Json<CustomResponse<Radio>>` - Json response
-pub async fn create_radio_handler(Query(params): Query<Params>) -> Json<CustomResponse<Radio>> {
-    let (name, language, station_type) = (params.name, params.language, params.type_field);
+/// * `(StatusCode, Json<RRadioStation>)` - Json response
+pub async fn create_radio_handler(
+    Query(params): Query<RadioParams>,
+    Path(path): Path<RadioStationType>,
+) -> (StatusCode, Json<RRadioStation>) {
+    let name = params.name.unwrap_or_default();
+    let lang = params.lang.unwrap_or_default();
+    let song_id = params.song_id.unwrap_or_default();
+    let artist_id = params.artist_id.unwrap_or_default();
+    let mode = params.mode.unwrap_or_default();
+    let id = params.id.unwrap_or_default();
+    let entity_type = params.entity_type.unwrap_or_default();
+    let raw = parse_bool(params.raw.unwrap_or_default());
+    let camel = parse_bool(params.camel.unwrap_or_default());
 
-    match (name, station_type) {
-        (Some(name), Some(station_type)) => {
-            if name.is_empty() {
-                return Json(CustomResponse {
-                    status: StatusCode::Failed,
-                    message: "❌ Radio name is required",
-                    data: None,
-                });
-            }
-
-            // TODO: validate station type
-
-            let result = create_radio(
-                name.split(",").collect(),
-                &language.unwrap_or("hindi,english".to_string()),
+    let (status, response) = match (path, name.is_empty(), id.is_empty()) {
+        (RadioStationType::Featured | RadioStationType::Artist, true, _) => (
+            StatusCode::BAD_REQUEST,
+            Union::B(CResponse::new(
+                Status::Failed,
+                "❌ Radio Station Name is Required!".to_string(),
+                None,
+            )),
+        ),
+        (RadioStationType::Entity, _, true) => (
+            StatusCode::BAD_REQUEST,
+            Union::B(CResponse::new(
+                Status::Failed,
+                "❌ Entity ID is Required!".to_string(),
+                None,
+            )),
+        ),
+        (station_type, _, _) => {
+            let radio = create_radio(
+                song_id,
+                artist_id,
+                name,
+                mode,
+                lang,
+                id,
+                entity_type,
                 station_type,
+                raw,
+                camel,
             )
             .await;
 
-            match result {
-                Ok(radio) => Json(CustomResponse {
-                    status: StatusCode::Success,
-                    message: "✅ Radio created successfully",
-                    data: Some(radio),
-                }),
-                Err(_) => Json(CustomResponse {
-                    status: StatusCode::Failed,
-                    message: "❌ Failed to create radio",
-                    data: None,
-                }),
+            match radio {
+                Ok(radio) => (StatusCode::OK, radio),
+                Err(e) => (
+                    StatusCode::BAD_REQUEST,
+                    Union::B(CResponse::new(Status::Failed, e, None)),
+                ),
             }
         }
-        _ => Json(CustomResponse {
-            status: StatusCode::Failed,
-            message: "❌ Missing required parameters",
-            data: None,
-        }),
-    }
+    };
+
+    (status, Json(response))
 }
 
 /// Handler for `/radio/songs` route
@@ -81,46 +111,41 @@ pub async fn create_radio_handler(Query(params): Query<Params>) -> Json<CustomRe
 /// ## Arguments
 ///
 /// * `id` - station id
-/// * `count` - count of songs to fetch
-/// * `next` - next index
+/// * `n` - number of songs
+/// * `raw` - weather to return raw response
+/// * `camel` - weather to return camel case response keys
 ///
 /// ## Returns
 ///
-/// * `Json<CustomResponse<RadioSongResponse>>` - Json response
+/// * `(StatusCode, Json<RRadioSongs>)` - Json response
 pub async fn radio_songs_handler(
-    Query(params): Query<Params>,
-) -> Json<CustomResponse<RadioSongResponse>> {
-    let (id, count, next) = (params.id, params.count, params.next);
+    Query(params): Query<RadioParams>,
+) -> (StatusCode, Json<RRadioSongs>) {
+    let id = params.id.unwrap_or_default();
+    let n = params.n.unwrap_or("10".to_string());
+    let raw = parse_bool(params.raw.unwrap_or_default());
+    let camel = parse_bool(params.camel.unwrap_or_default());
 
-    match id {
-        Some(id) => {
-            if id.is_empty() {
-                return Json(CustomResponse {
-                    status: StatusCode::Failed,
-                    message: "❌ Station id is required",
-                    data: None,
-                });
-            }
+    let (status, response) = if id.is_empty() {
+        (
+            StatusCode::BAD_REQUEST,
+            Union::B(CResponse::new(
+                Status::Failed,
+                "❌ Radio Station ID is Required!".to_string(),
+                None,
+            )),
+        )
+    } else {
+        let radio = get_radio_songs(id, n, raw, camel).await;
 
-            let result = get_radio_songs(&id, count.unwrap_or(10), next.unwrap_or(0)).await;
-
-            match result {
-                Ok(radio) => Json(CustomResponse {
-                    status: StatusCode::Success,
-                    message: "✅ Radio songs fetched successfully",
-                    data: Some(radio),
-                }),
-                Err(_) => Json(CustomResponse {
-                    status: StatusCode::Failed,
-                    message: "❌ Failed to fetch radio songs",
-                    data: None,
-                }),
-            }
+        match radio {
+            Ok(radio) => (StatusCode::OK, radio),
+            Err(e) => (
+                StatusCode::BAD_REQUEST,
+                Union::B(CResponse::new(Status::Failed, e, None)),
+            ),
         }
-        _ => Json(CustomResponse {
-            status: StatusCode::Failed,
-            message: "❌ Station id is required",
-            data: None,
-        }),
-    }
+    };
+
+    (status, Json(response))
 }

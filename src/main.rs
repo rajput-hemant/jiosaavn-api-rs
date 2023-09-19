@@ -58,7 +58,8 @@ async fn main() {
         .route("/search/artists", get(artists_search_handler))
         .route("/search/playlists", get(playlists_search_handler))
         // radio routes
-        .route("/radio", get(create_radio_handler))
+        .route("/radio/:path", get(create_radio_handler))
+        .route("/radio/create/:path", get(create_radio_handler))
         .route("/radio/songs", get(radio_songs_handler))
         // lyrics route
         .route("/lyrics", get(lyrics_handler))

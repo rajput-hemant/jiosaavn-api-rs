@@ -16,7 +16,7 @@ pub use lyrics_handler::lyrics_handler;
 pub use modules_handler::*;
 pub use not_found_handler::*;
 pub use playlist_handler::*;
-pub use radio_handler::{create_radio_handler, radio_songs_handler};
+pub use radio_handler::*;
 pub use search_handler::{
     albums_search_handler, artists_search_handler, playlists_search_handler, search_all_handler,
     songs_search_handler, top_searches_handler,

@@ -22,6 +22,14 @@
 		{
 			"source": "/artist/(songs|albums)",
 			"destination": "/api/artist/songs_albums.rs"
+		},
+		{
+			"source": "/radio(/create)?/:path(featured|artist|entity)",
+			"destination": "/api/radio/[path].rs"
+		},
+		{
+			"source": "/radio/songs",
+			"destination": "/api/radio/songs.rs"
 		}
 	],
 	"headers": [

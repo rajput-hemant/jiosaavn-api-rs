@@ -1,139 +1,183 @@
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-
-use reqwest::Error;
+use serde_json::Value;
 
 use crate::{
-    models::radio::{Radio, RadioSongResponse},
-    payloads::radio_payload::radio_song_payload,
+    config::{CREATE_ARTIST_RADIO, CREATE_ENTITY_RADIO, CREATE_FEATURED_RADIO, RADIO_SONGS},
+    models::{
+        misc::Union,
+        radio::{RRadioSongs, RRadioStation, RadioStationType},
+        response::{CResponse, Status},
+    },
+    payloads::radio_payload::{radio_songs_payload, radio_station_payload},
+    utils::formatted_payload,
 };
 
 use super::api_service::http;
 
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub enum RadioStationType {
-    Featured,
-    Artist,
-    Entity,
-}
-
-/// Helper function to make request to `webradio.createFeaturedStation` endpoint of JioSaavn API to create radio
+/// Helper function to create radio station
 ///
 /// ## Arguments
 ///
-/// * `name` - Name of the radio
-/// * `language` - Language of the radio
-/// * `station_type` - Type of the radio
+/// * `song_id` - song id
+/// * `artist_id` - artist id
+/// * `name` - radio name
+/// * `mode` - radio mode
+/// * `lang` - radio language
+/// * `id` - entity id
+/// * `entity_type` - entity type
+/// * `station_type` - radio station type
+/// * `raw` - weather to return raw response
+/// * `camel` - weather to return camel case response keys
 ///
 /// ## Returns
 ///
-/// * `Result<Radio, Error>` - Result of radio payload
+/// * `Result<RRadioStation, String>` - Result of radio station creation
 pub async fn create_radio(
-    name: Vec<&str>,
-    language: &str,
+    song_id: String,
+    artist_id: String,
+    name: String,
+    mode: String,
+    lang: String,
+    id: String,
+    entity_type: String,
     station_type: RadioStationType,
-) -> Result<Radio, Error> {
-    let endpoint = match station_type {
-        RadioStationType::Featured => "webradio.createFeaturedStation",
-        RadioStationType::Artist => "webradio.createArtistStation",
-        RadioStationType::Entity => "webradio.createEntityStation",
+    raw: bool,
+    camel: bool,
+) -> Result<RRadioStation, String> {
+    let path = match station_type {
+        RadioStationType::Featured => CREATE_FEATURED_RADIO,
+        RadioStationType::Artist => CREATE_ARTIST_RADIO,
+        RadioStationType::Entity => CREATE_ENTITY_RADIO,
     };
 
-    let params: Option<HashMap<String, String>> = match station_type {
-        RadioStationType::Featured => Some(
-            vec![
-                ("name".to_string(), name[0].to_string()),
-                ("language".to_string(), language.to_string()),
-            ]
-            .into_iter()
-            .collect(),
-        ),
-        RadioStationType::Artist => Some(
-            vec![
-                ("name".to_string(), name[0].to_string()),
-                ("query".to_string(), name[0].to_string()),
-                ("language".to_string(), language.to_string()),
-            ]
-            .into_iter()
-            .collect(),
-        ),
-        RadioStationType::Entity => Some(
-            vec![
-                (
-                    "entity_id".to_string(),
-                    name.iter()
-                        .map(|e| format!("\"{e}\""))
-                        .collect::<Vec<_>>()
-                        .join(","),
-                ),
-                ("entity_type".to_string(), "queue".to_string()),
-            ]
-            .into_iter()
-            .collect(),
-        ),
-    };
-
-    let result = http(endpoint, true, params).await?;
-
-    Ok(result)
-}
-
-/// Helper function to make request to `webradio.getSong` endpoint of JioSaavn API to get radio songs
-///
-/// ## Arguments
-///
-/// * `station_id` - Station id
-/// * `count` - Count of songs to fetch
-/// * `next` - Next index
-///
-/// ## Returns
-///
-/// * `Result<RadioSongResponse, Error>` - Result of radio song payload
-pub async fn get_radio_songs(
-    station_id: &str,
-    count: u64,
-    next: u64,
-) -> Result<RadioSongResponse, Error> {
-    let params: Option<HashMap<String, String>> = Some(
-        vec![
-            ("stationid".to_string(), station_id.to_string()),
-            ("k".to_string(), count.to_string()),
-            ("next".to_string(), next.to_string()),
+    let query = match station_type {
+        RadioStationType::Featured => vec![
+            ("name".to_string(), name.clone()),
+            ("query".to_string(), name),
+            ("song_id".to_string(), song_id),
+            ("artist_id".to_string(), artist_id),
+            ("mode".to_string(), mode),
+            ("language".to_string(), lang),
         ]
         .into_iter()
         .collect(),
-    );
 
-    let result = http("webradio.getSong", true, params).await?;
+        RadioStationType::Artist => vec![
+            ("name".to_string(), name.clone()),
+            ("query".to_string(), name),
+            ("song_id".to_string(), song_id),
+            ("artist_id".to_string(), artist_id),
+            ("mode".to_string(), mode),
+            ("language".to_string(), lang),
+        ]
+        .into_iter()
+        .collect(),
 
-    Ok(radio_song_payload(result))
+        RadioStationType::Entity => vec![
+            ("entity_id".to_string(), id),
+            ("entity_type".to_string(), format!("{:?}", entity_type)),
+        ]
+        .into_iter()
+        .collect(),
+    };
+
+    let response = http::<Value>(path, true, Some(query)).await;
+
+    match response {
+        Ok(radio) => {
+            if radio.get("error").is_some() {
+                if radio["error"].is_string() {
+                    Err(radio["error"].as_str().unwrap().to_string())
+                } else {
+                    Err(radio["error"]["msg"].as_str().unwrap().to_string())
+                }
+            } else if raw {
+                Ok(Union::A(radio))
+            } else {
+                Ok(Union::B(CResponse::new(
+                    Status::Success,
+                    format!("✅ Successfully created {:?} Radio station", station_type),
+                    Some(formatted_payload(radio, camel, &radio_station_payload)),
+                )))
+            }
+        }
+        Err(e) => {
+            println!("Error: {e}");
+
+            Err(format!(
+                "❌ Unable to create {:?} Radio station",
+                station_type
+            ))
+        }
+    }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+/// Helper function to get radio station songs
+///
+/// ## Arguments
+///
+/// * `station_id` - radio station id
+///
+/// ## Returns
+///
+/// * `Result<RRadioSongs, String>` - Result of radio station songs
+pub async fn get_radio_songs(
+    station_id: String,
+    n: String,
+    raw: bool,
+    camel: bool,
+) -> Result<RRadioSongs, String> {
+    let query = vec![("stationid".to_string(), station_id), ("k".to_string(), n)]
+        .into_iter()
+        .collect();
 
-    #[tokio::test]
-    async fn test_create_radio() -> Result<(), Error> {
-        let result = create_radio(vec!["Arijit Singh"], "hindi", RadioStationType::Artist).await?;
+    let response = http::<Value>(RADIO_SONGS, true, Some(query)).await;
 
-        dbg!(result);
+    match response {
+        Ok(radio) => {
+            if radio.get("error").is_some() {
+                Err(radio["error"].as_str().unwrap().to_string())
+            } else if raw {
+                Ok(Union::A(radio))
+            } else {
+                Ok(Union::B(CResponse::new(
+                    Status::Success,
+                    "✅ Radio Station Songs Fetched Successfully!".to_string(),
+                    Some(formatted_payload(radio, camel, &radio_songs_payload)),
+                )))
+            }
+        }
+        Err(e) => {
+            println!("Error: {e}");
 
-        Ok(())
-    }
-
-    #[tokio::test]
-    async fn test_get_radio_songs() -> Result<(), Error> {
-        let result = get_radio_songs(
-            "z4jVxXCk2U70olZbGArPKmAINUg2-4NRNs1JimLO9Cgb5pKgepaRvA__~^~artist_radio~^~459320",
-            10,
-            0,
-        )
-        .await?;
-
-        dbg!(result);
-
-        Ok(())
+            Err("❌ Unable to fetch radio station songs".to_string())
+        }
     }
 }
+
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+
+//     #[tokio::test]
+//     async fn test_create_radio() -> Result<(), Error> {
+//         let result = create_radio(vec!["Arijit Singh"], "hindi", RadioStationType::Artist).await?;
+
+//         dbg!(result);
+
+//         Ok(())
+//     }
+
+//     #[tokio::test]
+//     async fn test_get_radio_songs() -> Result<(), Error> {
+//         let result = get_radio_songs(
+//             "z4jVxXCk2U70olZbGArPKmAINUg2-4NRNs1JimLO9Cgb5pKgepaRvA__~^~artist_radio~^~459320",
+//             10,
+//             0,
+//         )
+//         .await?;
+
+//         dbg!(result);
+
+//         Ok(())
+//     }
+// }

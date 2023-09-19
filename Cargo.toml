@@ -77,3 +77,12 @@ path = "api/artist/recommend.rs"
 [[bin]]
 name = "artist_songs_albums"
 path = "api/artist/songs_albums.rs"
+
+# radio
+[[bin]]
+name = "create_radio"
+path = "api/radio/[path].rs"
+
+[[bin]]
+name = "radio_songs"
+path = "api/radio/songs.rs"
