@@ -86,3 +86,8 @@ path = "api/radio/[path].rs"
 [[bin]]
 name = "radio_songs"
 path = "api/radio/songs.rs"
+
+# not found
+[[bin]]
+name = "not_found"
+path = "api/[...404].rs"

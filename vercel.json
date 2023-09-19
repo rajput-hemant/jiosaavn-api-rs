@@ -30,6 +30,10 @@
 		{
 			"source": "/radio/songs",
 			"destination": "/api/radio/songs.rs"
+		},
+		{
+			"source": "/(.*)",
+			"destination": "/api/[...404].rs"
 		}
 	],
 	"headers": [
