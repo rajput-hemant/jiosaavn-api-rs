@@ -31,6 +31,7 @@ use super::api_service::http;
 /// ## Returns
 ///
 /// * `Result<RRadioStation, String>` - Result of radio station creation
+#[allow(clippy::too_many_arguments)]
 pub async fn create_radio(
     song_id: String,
     artist_id: String,
@@ -153,31 +154,3 @@ pub async fn get_radio_songs(
         }
     }
 }
-
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-
-//     #[tokio::test]
-//     async fn test_create_radio() -> Result<(), Error> {
-//         let result = create_radio(vec!["Arijit Singh"], "hindi", RadioStationType::Artist).await?;
-
-//         dbg!(result);
-
-//         Ok(())
-//     }
-
-//     #[tokio::test]
-//     async fn test_get_radio_songs() -> Result<(), Error> {
-//         let result = get_radio_songs(
-//             "z4jVxXCk2U70olZbGArPKmAINUg2-4NRNs1JimLO9Cgb5pKgepaRvA__~^~artist_radio~^~459320",
-//             10,
-//             0,
-//         )
-//         .await?;
-
-//         dbg!(result);
-
-//         Ok(())
-//     }
-// }

@@ -5,13 +5,13 @@ use crate::models::radio::{
 use super::song_payload;
 
 /// Create radio station payload from radio station request
-/// 
+///
 /// ## Arguments
-/// 
+///
 /// * `station` - Radio station request
-/// 
+///
 /// ## Returns
-/// 
+///
 /// * `RadioStationResponse` - Radio station payload
 pub fn radio_station_payload(station: RadioStationRequest) -> RadioStationResponse {
     RadioStationResponse {
@@ -20,13 +20,13 @@ pub fn radio_station_payload(station: RadioStationRequest) -> RadioStationRespon
 }
 
 /// Create radio songs payload from radio songs request
-/// 
+///
 /// ## Arguments
-/// 
+///
 /// * `radio` - Radio songs request
-/// 
+///
 /// ## Returns
-/// 
+///
 /// * `RadioSongResponse` - Radio songs payload
 pub fn radio_songs_payload(radio: RadioSongRequest) -> RadioSongResponse {
     let station_id = radio.stationid;
@@ -37,17 +37,13 @@ pub fn radio_songs_payload(radio: RadioSongRequest) -> RadioSongResponse {
         return RadioSongResponse { station_id, songs };
     }
 
-    match radio.data {
-        Some(song) => {
-            for (k, v) in song {
-                if k == "stationid" || k == "error" {
-                    continue;
-                }
-                songs.push(song_payload(v.song));
+    if let Some(song) = radio.data {
+        for (k, v) in song {
+            if k == "stationid" || k == "error" {
+                continue;
             }
+            songs.push(song_payload(v.song));
         }
-
-        None => {}
     }
 
     RadioSongResponse { station_id, songs }

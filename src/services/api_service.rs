@@ -76,7 +76,7 @@ pub async fn http<T: DeserializeOwned>(
 
     let body: T = api_service
         .client
-        .get(url.clone())
+        .get(url)
         .headers(headers)
         .send()
         .await?

@@ -13,7 +13,7 @@ async fn main() -> Result<(), Error> {
 pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
     let parsed_url = Url::parse(&req.uri().to_string()).unwrap();
 
-    let path = parsed_url.path().split("/").last().unwrap().to_string();
+    let path = parsed_url.path().split('/').last().unwrap().to_string();
 
     let hash_query: HashMap<String, String> = parsed_url.query_pairs().into_owned().collect();
 

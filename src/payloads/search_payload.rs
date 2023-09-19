@@ -240,7 +240,7 @@ fn search_album_payload(album: SearchAlbumRequest) -> SearchAlbumResponse {
 fn search_artist_payload(artist: SearchArtistRequest) -> SearchArtistResponse {
     SearchArtistResponse {
         id: artist.id,
-        name: if artist.title == None {
+        name: if artist.title.is_none() {
             artist.name
         } else {
             artist.title

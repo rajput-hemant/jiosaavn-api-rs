@@ -1,8 +1,8 @@
 use super::{
     album::{AlbumRequest, AlbumResponse},
+    misc::Quality,
     misc::Union3,
     playlist::{PlaylistRequest, PlaylistResponse},
-    misc::Quality,
     song::{SongRequest, SongResponse},
 };
 use serde::{Deserialize, Serialize};

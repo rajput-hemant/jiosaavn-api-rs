@@ -16,7 +16,7 @@ use crate::{
     },
 };
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Params {
     query: Option<String>,
