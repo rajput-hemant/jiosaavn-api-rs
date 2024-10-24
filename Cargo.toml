@@ -8,21 +8,21 @@ authors = ["Hemant Rajput <68769346+rajput-hemant@users.noreply.github.com>"]
 default-run = "jiosaavn"
 
 [dependencies]
-axum = "0.6.20"
-base64 = "0.21.4"
+axum = "0.7.7"
+base64 = "0.22.1"
 dotenv = "0.15.0"
-openssl = "0.10.57"
-regex = "1.9.5"
-reqwest = { version = "0.11.20", features = ["serde_json", "json"] }
-serde = { version = "1.0.188", features = ["derive"] }
-serde_json = "1.0.106"
-tokio = { version = "1.32.0", features = ["full"] }
-tower = { version = "0.4.13", features = ["limit", "buffer"] }
-tower-http = { version = "0.4.4", features = ["cors"] }
-tracing = "0.1.37"
-tracing-subscriber = "0.3.17"
-url = "2.4.1"
-vercel_runtime = "1.0.2"
+openssl = "0.10.68"
+regex = "1.11.1"
+reqwest = { version = "0.12.8", features = ["serde_json", "json"] }
+serde = { version = "1.0.213", features = ["derive"] }
+serde_json = "1.0.132"
+tokio = { version = "1.41.0", features = ["full"] }
+tower = { version = "0.5.1", features = ["limit", "buffer"] }
+tower-http = { version = "0.6.1", features = ["cors"] }
+tracing = "0.1.40"
+tracing-subscriber = "0.3.18"
+url = "2.5.2"
+vercel_runtime = "1.1.4"
 
 # home 
 [[bin]]
